@@ -7,6 +7,7 @@ interface Achievement {
     icon: string;
     description: string;
     unlocked: boolean;
+    tier: 'gold' | 'silver' | 'bronze';
 }
 
 let achievements: Achievement[] = [];
@@ -68,15 +69,27 @@ export function activate(context: vscode.ExtensionContext) {
                                 padding: 5px;
                                 position: absolute;
                                 z-index: 1;
-                                bottom: 125%; /* Position the tooltip above the image */
+                                bottom: 125%;
                                 left: 50%;
                                 margin-left: -60px;
                                 opacity: 0;
                                 transition: opacity 0.3s;
                             }
+                            .achievement:hover {
+                                transform: scale(1.2);
+                                }
                             .achievement:hover .tooltip {
                                 visibility: visible;
                                 opacity: 1;
+                            }
+                            .gold {
+                                border: 2px solid gold;
+                            }
+                            .silver {
+                                border: 2px solid silver;
+                            }
+                            .bronze {
+                                border: 2px solid bronze;
                             }
                         </style>
                     </head>
@@ -86,7 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
                         <ul style="list-style-type:none; padding: 0;">
                             ${achievements.filter(a => a.unlocked).map(ach => `
                                 <li class="achievement">
-                                    <img src="${this._view?.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, ach.icon))}" width="50" height="50" />
+                                    <img src="${this._view?.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, ach.icon))}" width="50" height="50" class="${ach.tier}" />
                                     <div class="tooltip">${ach.description}</div>
                                 </li>
                             `).join('')}
@@ -95,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
                         <ul style="list-style-type:none; padding: 0;">
                             ${achievements.filter(a => !a.unlocked).map(ach => `
                                 <li class="achievement">
-                                    <img src="${this._view?.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, ach.icon))}" width="50" height="50" />
+                                    <img src="${this._view?.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, ach.icon))}" width="50" height="50" class="${ach.tier}" />
                                     <div class="tooltip">${ach.description}</div>
                                 </li>
                             `).join('')}
@@ -104,6 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
                 </html>
             `;
         }
+        
 
         public refresh() {
             this.updateWebview();
