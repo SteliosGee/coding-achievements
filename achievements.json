@@ -1,0 +1,14 @@
+[
+  {
+    "name": "🏆 Achievement Unlocked: Welcome to Code Achievements!",
+    "icon": "media/achievement-icon.png",
+    "description": "You started using Code Achievements!",
+    "unlocked": false
+  },
+  {
+    "name": "🏆 Achievement Unlocked: First Save!",
+    "icon": "media/achievement-icon.png",
+    "description": "You saved a file for the first time!",
+    "unlocked": false
+  }
+]

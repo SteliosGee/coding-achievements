@@ -33,7 +33,17 @@
             "type": "webview"
           }
         ]
-      }
+      },
+      "commands": [
+        {
+          "command": "coding-achievements.activate",
+          "title": "Activate Achievements"
+        },
+        {
+          "command": "coding-achievements.reset",
+          "title": "Clear Achievements"
+        }
+      ]
     },
   
   "scripts": {

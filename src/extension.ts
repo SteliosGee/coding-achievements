@@ -1,14 +1,28 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
-let unlockedAchievements: string[] = [];
+interface Achievement {
+    name: string;
+    icon: string;
+    description: string;
+    unlocked: boolean;
+}
+
+let achievements: Achievement[] = [];
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('✅ Code Achievements extension is now active!');
 
-    // Load stored achievements
-    unlockedAchievements = context.globalState.get<string[]>('unlockedAchievements') || [];
+    const achievementsFilePath = path.join(context.extensionPath, 'achievements.json');
 
-    // Sidebar Provider Class
+    if (fs.existsSync(achievementsFilePath)) {
+        console.log('📄 Achievements file found:', achievementsFilePath);
+        achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
+    } else {
+        console.error('⚠️ Achievements file not found:', achievementsFilePath);
+    }
+
     class SidebarProvider implements vscode.WebviewViewProvider {
         public readonly viewType = 'coding-achievements-sidebar';
         private _view?: vscode.WebviewView;
@@ -30,10 +44,61 @@ export function activate(context: vscode.ExtensionContext) {
         private getWebviewContent(): string {
             return `
                 <html>
+                    <head>
+                        <style>
+                            body {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                text-align: center;
+                            }
+                            .achievement {
+                                position: relative;
+                                display: inline-block;
+                                margin: 10px;
+                            }
+                            .achievement .tooltip {
+                                visibility: hidden;
+                                width: 120px;
+                                background-color: black;
+                                color: #fff;
+                                text-align: center;
+                                border-radius: 6px;
+                                padding: 5px;
+                                position: absolute;
+                                z-index: 1;
+                                bottom: 125%; /* Position the tooltip above the image */
+                                left: 50%;
+                                margin-left: -60px;
+                                opacity: 0;
+                                transition: opacity 0.3s;
+                            }
+                            .achievement:hover .tooltip {
+                                visibility: visible;
+                                opacity: 1;
+                            }
+                        </style>
+                    </head>
                     <body>
                         <h1>Achievements</h1>
-                        <ul>
-                            ${unlockedAchievements.map(ach => `<li>${ach}</li>`).join('')}
+                        <h3>Unlocked: ${achievements.filter(a => a.unlocked).length} / ${achievements.length}</h3>
+                        <ul style="list-style-type:none; padding: 0;">
+                            ${achievements.filter(a => a.unlocked).map(ach => `
+                                <li class="achievement">
+                                    <img src="${this._view?.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, ach.icon))}" width="50" height="50" />
+                                    <div class="tooltip">${ach.description}</div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <h3>Locked: ${achievements.filter(a => !a.unlocked).length}</h3>
+                        <ul style="list-style-type:none; padding: 0;">
+                            ${achievements.filter(a => !a.unlocked).map(ach => `
+                                <li class="achievement">
+                                    <img src="${this._view?.webview.asWebviewUri(vscode.Uri.joinPath(this._context.extensionUri, ach.icon))}" width="50" height="50" />
+                                    <div class="tooltip">${ach.description}</div>
+                                </li>
+                            `).join('')}
                         </ul>
                     </body>
                 </html>
@@ -45,39 +110,40 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
-    // Declare sidebarProvider variable before using it
     let sidebarProvider = new SidebarProvider(context);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('coding-achievements-sidebar', sidebarProvider)
     );
 
-    // Function to unlock an achievement and update the UI
-    function unlockAchievement(achievement: string, context: vscode.ExtensionContext) {
-        if (!unlockedAchievements.includes(achievement)) {
-            unlockedAchievements.push(achievement);
-            context.globalState.update('unlockedAchievements', unlockedAchievements);
-            
-            // Make sure sidebarProvider exists before calling refresh
-            if (sidebarProvider) {
-                sidebarProvider.refresh();
-            }
-
-            vscode.window.showInformationMessage(achievement);
+    function unlockAchievement(name: string) {
+        const achievement = achievements.find(a => a.name === name);
+        if (achievement && !achievement.unlocked) {
+            achievement.unlocked = true;
+            fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
+            sidebarProvider.refresh();
+            vscode.window.showInformationMessage(name);
         }
     }
 
-    // Show initial welcome message and unlock achievement if not already unlocked
-    if (!unlockedAchievements.includes('🏆 Achievement Unlocked: Welcome to Code Achievements!')) {
-        unlockAchievement('🏆 Achievement Unlocked: Welcome to Code Achievements!', context);
+    if (!achievements.find(a => a.name === '🏆 Achievement Unlocked: Welcome to Code Achievements!')?.unlocked) {
+        unlockAchievement('🏆 Achievement Unlocked: Welcome to Code Achievements!');
     }
 
-    // Command to manually activate the extension
-    let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
-        unlockAchievement('✅ Code Achievements manually activated!', context);
+    vscode.workspace.onDidSaveTextDocument(() => {
+        unlockAchievement('🏆 Achievement Unlocked: First Save!');
     });
 
-    // Push command to subscriptions
-    context.subscriptions.push(activateCommand);
+    let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
+        unlockAchievement('✅ Code Achievements manually activated!');
+    });
+
+    let resetCommand = vscode.commands.registerCommand('coding-achievements.reset', () => {
+        achievements.forEach(a => a.unlocked = false);
+        fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
+        sidebarProvider.refresh();
+    });
+
+    context.subscriptions.push(activateCommand, resetCommand);
 }
 
 export function deactivate() {
