@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { unlockAchievement } from './utils/unlockAchievement'; // Import the unlockAchievement function
 
-interface Achievement {
+export interface Achievement {
     name: string;
     icon: string;
     description: string;
@@ -77,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
                             }
                             .achievement:hover {
                                 transform: scale(1.2);
-                                }
+                            }
                             .achievement:hover .tooltip {
                                 visibility: visible;
                                 opacity: 1;
@@ -117,7 +118,6 @@ export function activate(context: vscode.ExtensionContext) {
                 </html>
             `;
         }
-        
 
         public refresh() {
             this.updateWebview();
@@ -129,28 +129,22 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerWebviewViewProvider('coding-achievements-sidebar', sidebarProvider)
     );
 
-    function unlockAchievement(name: string) {
-        const achievement = achievements.find(a => a.name === name);
-        if (achievement && !achievement.unlocked) {
-            achievement.unlocked = true;
-            fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
-            sidebarProvider.refresh();
-            vscode.window.showInformationMessage(name);
-        }
-    }
-
+    // Check if the "Welcome" achievement is unlocked
     if (!achievements.find(a => a.name === '🏆 Achievement Unlocked: Welcome to Code Achievements!')?.unlocked) {
-        unlockAchievement('🏆 Achievement Unlocked: Welcome to Code Achievements!');
+        unlockAchievement(achievements, '🏆 Achievement Unlocked: Welcome to Code Achievements!', achievementsFilePath, sidebarProvider);
     }
 
+    // Unlock achievement on file save
     vscode.workspace.onDidSaveTextDocument(() => {
-        unlockAchievement('🏆 Achievement Unlocked: First Save!');
+        unlockAchievement(achievements, '🏆 Achievement Unlocked: First Save!', achievementsFilePath, sidebarProvider);
     });
 
+    // Manual activation command
     let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
-        unlockAchievement('✅ Code Achievements manually activated!');
+        unlockAchievement(achievements, '✅ Code Achievements manually activated!', achievementsFilePath, sidebarProvider);
     });
 
+    // Reset command to reset achievements
     let resetCommand = vscode.commands.registerCommand('coding-achievements.reset', () => {
         achievements.forEach(a => a.unlocked = false);
         fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
