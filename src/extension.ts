@@ -11,12 +11,14 @@ export interface Achievement {
     tier: 'gold' | 'silver' | 'bronze';
 }
 
-let achievements: Achievement[] = [];
+export let achievements: Achievement[] = [];
+export let achievementsFilePath: string;
+export let sidebarProvider: any;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('✅ Code Achievements extension is now active!');
 
-    const achievementsFilePath = path.join(context.extensionPath, 'achievements.json');
+    achievementsFilePath = path.join(context.extensionPath, 'achievements.json');
 
     if (fs.existsSync(achievementsFilePath)) {
         console.log('📄 Achievements file found:', achievementsFilePath);
@@ -124,7 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }
 
-    let sidebarProvider = new SidebarProvider(context);
+    sidebarProvider = new SidebarProvider(context);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('coding-achievements-sidebar', sidebarProvider)
     );
@@ -133,11 +135,6 @@ export function activate(context: vscode.ExtensionContext) {
     if (!achievements.find(a => a.name === '🏆 Achievement Unlocked: Welcome to Code Achievements!')?.unlocked) {
         unlockAchievement(achievements, '🏆 Achievement Unlocked: Welcome to Code Achievements!', achievementsFilePath, sidebarProvider);
     }
-
-    // Unlock achievement on file save
-    vscode.workspace.onDidSaveTextDocument(() => {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: First Save!', achievementsFilePath, sidebarProvider);
-    });
 
     // Manual activation command
     let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
@@ -152,6 +149,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(activateCommand, resetCommand);
+
+    // Register save.ts functionality
+    require('./achievements/save');
 }
 
 export function deactivate() {
