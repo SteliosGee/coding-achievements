@@ -60,6 +60,6 @@
     "icon": "media/achievement-icon.png",
     "description": "You have typed 10000000 characters in a total",
     "tier": "diamond",
-    "unlocked": false
+    "unlocked": true
   }
 ]
