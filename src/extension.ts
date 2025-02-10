@@ -8,7 +8,7 @@ export interface Achievement {
     icon: string;
     description: string;
     unlocked: boolean;
-    tier: 'gold' | 'silver' | 'bronze';
+    tier: 'diamond' | 'gold' | 'silver' | 'bronze';
 }
 
 export let achievements: Achievement[] = [];
@@ -131,11 +131,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerWebviewViewProvider('coding-achievements-sidebar', sidebarProvider)
     );
 
-    // Check if the "Welcome" achievement is unlocked
-    if (!achievements.find(a => a.name === '🏆 Achievement Unlocked: Welcome to Code Achievements!')?.unlocked) {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: Welcome to Code Achievements!', achievementsFilePath, sidebarProvider);
-    }
-
     // Manual activation command
     let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
         unlockAchievement(achievements, '✅ Code Achievements manually activated!', achievementsFilePath, sidebarProvider);
@@ -146,12 +141,17 @@ export function activate(context: vscode.ExtensionContext) {
         achievements.forEach(a => a.unlocked = false);
         fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
         sidebarProvider.refresh();
+
+        // Reset totalCharacters and addedCharacters
+        const typingModule = require('./achievements/typing');
+        typingModule.resetCharacterCounts();
     });
 
     context.subscriptions.push(activateCommand, resetCommand);
 
     // Register save.ts functionality
     require('./achievements/save');
+    require('./achievements/typing');
 }
 
 export function deactivate() {

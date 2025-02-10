@@ -1,16 +1,65 @@
 [
   {
-    "name": "🏆 Achievement Unlocked: Welcome to Code Achievements!",
-    "icon": "media/achievement-icon.png",
-    "description": "You started using Code Achievements!",
-    "tier": "gold",
-    "unlocked": true
-  },
-  {
     "name": "🏆 Achievement Unlocked: First Save!",
     "icon": "media/achievement-icon.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
     "unlocked": true
+  },
+  {
+    "name": "🏆 Achievement Unlocked: Code for 1 Hour!",
+    "icon": "media/achievement-icon.png",
+    "description": "You have coded for 1 hour!",
+    "tier": "bronze",
+    "unlocked": false
+  },
+  {
+    "name": "🏆 Achievement Unlocked: Code for 10 Hours!",
+    "icon": "media/achievement-icon.png",
+    "description": "You have coded for 10 hours!",
+    "tier": "silver",
+    "unlocked": false
+  },
+  {
+    "name": "🏆 Achievement Unlocked: Code for 100 Hours!",
+    "icon": "media/achievement-icon.png",
+    "description": "You have coded for 100 hours!",
+    "tier": "gold",
+    "unlocked": false
+  },
+  {
+    "name": "🏆 Achievement Unlocked: Code for 1000 Hours!",
+    "icon": "media/achievement-icon.png",
+    "description": "You have coded for 1000 hours!",
+    "tier": "diamond",
+    "unlocked": false
+  },
+  {
+    "name": "Fast Fingers",
+    "icon": "media/achievement-icon.png",
+    "description": "You have typed 1000 characters in a session",
+    "tier": "bronze",
+    "unlocked": true
+  },
+  {
+    "name": "Keyboard Warrior",
+    "icon": "media/achievement-icon.png",
+    "description": "You have typed 10000 characters in a session",
+    "tier": "silver",
+    "unlocked": false
+  },
+  {
+    "name": "Code Ninja",
+    "icon": "media/achievement-icon.png",
+    "description": "You have typed 100000 characters in a session",
+    "tier": "gold",
+    "unlocked": false
+  },
+  {
+    "name": "Hacker Mode",
+    "icon": "media/achievement-icon.png",
+    "description": "You have typed 10000000 characters in a total",
+    "tier": "diamond",
+    "unlocked": false
   }
 ]
