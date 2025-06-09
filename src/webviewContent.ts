@@ -202,27 +202,54 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 `).join('')}
                 
                 <div class="button-container">
-                    <button class="refresh-btn" onclick="refreshView()">Refresh</button>
-                    <button class="reset-btn" onclick="resetAchievements()">Reset All Progress</button>
+<button class="refresh-btn">Refresh</button>
+<button class="reset-btn">Reset All Progress</button>
+
                 </div>
                 
-                <script>
-                    const vscode = acquireVsCodeApi();
-                    
-                    function refreshView() {
-                        vscode.postMessage({ 
-                            command: 'refresh'
-                        });
-                    }
-                    
-                    function resetAchievements() {
-                        if (confirm('WARNING: This will reset ALL your achievement progress and lock all achievements. You will start from scratch. Continue?')) {
-                            vscode.postMessage({
-                                command: 'reset'
-                            });
-                        }
-                    }
-                </script>
+<script>
+    const vscode = acquireVsCodeApi();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const refreshBtn = document.querySelector('.refresh-btn');
+        const resetBtn = document.querySelector('.reset-btn');
+
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                vscode.postMessage({ command: 'refresh' });
+            });
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                    resetBtn.textContent = 'Resetting...';
+                    resetBtn.disabled = true;
+                    vscode.postMessage({ command: 'reset' });
+                
+            });
+        }
+    });
+
+    window.addEventListener('message', event => {
+        const message = event.data;
+        if (message.command === 'resetComplete') {
+            const resetBtn = document.querySelector('.reset-btn');
+            if (resetBtn) {
+                resetBtn.textContent = 'Reset All Progress';
+                resetBtn.disabled = false;
+            }
+
+            if (message.success) {
+                const successMsg = document.createElement('div');
+                successMsg.textContent = 'Reset successful!';
+                successMsg.style.color = 'green';
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 3000);
+            }
+        }
+    });
+</script>
+
             </body>
         </html>
     `;

@@ -31,50 +31,67 @@ export function activate(context: vscode.ExtensionContext) {
     // Function to reset all achievement trackers
     function resetAllAchievements() {
         try {
+            console.log('🔄 Starting achievement reset process...');
+            
             // Reset all achievements to unlocked=false
             achievements.forEach(a => a.unlocked = false);
             
             // Save to file with pretty formatting
             fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2), 'utf8');
-            console.log('💾 Achievements file reset and saved successfully');
+            console.log('💾 Achievements file reset and saved successfully to:', achievementsFilePath);
             
             // Make sure we reload the achievements array from the file
-            achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
+            try {
+                achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
+                console.log('📄 Reloaded achievements from file, count:', achievements.length);
+            } catch (readError) {
+                console.error('❌ Failed to reload achievements from file:', readError);
+            }
             
             // Reset all tracking modules
             try {
+                console.log('🔄 Resetting tracking modules...');
+                
                 const typingModule = require('./achievements/typing');
-                typingModule.resetCharacterCounts();
+                if (typingModule && typeof typingModule.resetCharacterCounts === 'function') {
+                    typingModule.resetCharacterCounts();
+                    console.log('✅ Typing module reset');
+                }
                 
                 const timeModule = require('./achievements/time-based');
                 if (timeModule && typeof timeModule.resetTimeTracking === 'function') {
                     timeModule.resetTimeTracking();
+                    console.log('✅ Time module reset');
                 }
                 
                 const languageModule = require('./achievements/language-specific');
                 if (languageModule && typeof languageModule.resetLanguageTracking === 'function') {
                     languageModule.resetLanguageTracking();
+                    console.log('✅ Language module reset');
                 }
                 
                 const timeOfDayModule = require('./achievements/time-of-day');
                 if (timeOfDayModule && typeof timeOfDayModule.resetTimeOfDayTracking === 'function') {
                     timeOfDayModule.resetTimeOfDayTracking();
+                    console.log('✅ Time of day module reset');
                 }
                 
                 const gitDebugModule = require('./achievements/git-debug');
                 if (gitDebugModule && typeof gitDebugModule.resetGitDebugTracking === 'function') {
                     gitDebugModule.resetGitDebugTracking();
+                    console.log('✅ Git/Debug module reset');
                 }
                 
-                console.log('🔄 All achievement tracker modules reset successfully');
+                console.log('✅ All achievement tracker modules reset successfully');
             } catch (moduleError) {
-                console.error('Error resetting achievement tracker modules:', moduleError);
+                console.error('❌ Error resetting achievement tracker modules:', moduleError);
             }
             
             vscode.window.showInformationMessage('All achievements have been reset! Starting from scratch.');
+            console.log('✅ Reset process completed successfully');
             return true;
         } catch (error) {
-            console.error('Error resetting achievements:', error);
+            console.error('❌ Error resetting achievements:', error);
             vscode.window.showErrorMessage('Failed to reset achievements. Check console for details.');
             return false;
         }
@@ -95,20 +112,32 @@ export function activate(context: vscode.ExtensionContext) {
             
             // Handle messages from the webview
             webviewView.webview.onDidReceiveMessage(message => {
-                console.log('Received message from webview:', message);
+                console.log('📨 Received message from webview:', message);
                 switch (message.command) {
                     case 'refresh':
-                        console.log('Refreshing webview');
+                        console.log('🔄 Refreshing webview');
                         this.updateWebview();
                         break;
                     case 'reset':
-                        console.log('Resetting achievements from webview');
+                        console.log('🔄 Resetting achievements from webview');
                         const success = resetAllAchievements();
+                        console.log(`Reset operation ${success ? 'succeeded' : 'failed'}`);
                         if (success) {
-                            // Force reload the achievements first to ensure we have updated data
-                            achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
+                            try {
+                                // Force reload the achievements first to ensure we have updated data
+                                achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
+                                console.log('📄 Reloaded achievements after reset, unlocked count:', 
+                                    achievements.filter(a => a.unlocked).length);
+                            } catch (error) {
+                                console.error('❌ Failed to reload achievements after reset:', error);
+                            }
                             this.updateWebview();
                             updateStatusBar();
+                            // Send confirmation back to webview
+                            webviewView.webview.postMessage({ command: 'resetComplete', success: true });
+                        } else {
+                            // Send error message back to webview
+                            webviewView.webview.postMessage({ command: 'resetComplete', success: false });
                         }
                         break;
                 }
@@ -150,7 +179,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Update status bar when achievements change
     function updateStatusBar() {
-        statusBarItem.tooltip = `${achievements.filter(a => a.unlocked).length}/${achievements.length} achievements unlocked`;
+        const unlockedCount = achievements.filter(a => a.unlocked).length;
+        const totalCount = achievements.length;
+        statusBarItem.tooltip = `${unlockedCount}/${totalCount} achievements unlocked`;
+        console.log(`📊 Status bar updated: ${unlockedCount}/${totalCount} achievements`);
     }
 
     // Manual activation command
