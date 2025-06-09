@@ -30,7 +30,8 @@
           {
             "id": "coding-achievements-sidebar",
             "name": "Achievements",
-            "type": "webview"
+            "type": "webview",
+            "icon": "media/badge.png"
           }
         ]
       },
@@ -42,6 +43,10 @@
         {
           "command": "coding-achievements.reset",
           "title": "Clear Achievements"
+        },
+        {
+          "command": "git.commitWithInput",
+          "title": "Commit with Input"
         }
       ]
     },

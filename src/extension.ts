@@ -82,6 +82,18 @@ export function activate(context: vscode.ExtensionContext) {
                     console.log('✅ Git/Debug module reset');
                 }
                 
+                const dailyStreaksModule = require('./achievements/daily-streaks');
+                if (dailyStreaksModule && typeof dailyStreaksModule.resetStreakData === 'function') {
+                    dailyStreaksModule.resetStreakData();
+                    console.log('✅ Daily streaks module reset');
+                }
+                
+                const fileExplorerModule = require('./achievements/file-explorer');
+                if (fileExplorerModule && typeof fileExplorerModule.resetFileExplorerTracking === 'function') {
+                    fileExplorerModule.resetFileExplorerTracking();
+                    console.log('✅ File explorer module reset');
+                }
+                
                 console.log('✅ All achievement tracker modules reset successfully');
             } catch (moduleError) {
                 console.error('❌ Error resetting achievement tracker modules:', moduleError);
@@ -207,6 +219,8 @@ export function activate(context: vscode.ExtensionContext) {
     require('./achievements/language-specific');
     require('./achievements/time-of-day');
     require('./achievements/git-debug');
+    require('./achievements/daily-streaks');
+    require('./achievements/file-explorer');
     
     // Update status bar on activation
     updateStatusBar();

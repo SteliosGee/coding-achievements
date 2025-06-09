@@ -4,7 +4,7 @@
     "icon": "media/achievement-icon.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": true
+    "unlocked": false
   },
   {
     "name": "🏆 Achievement Unlocked: Code for 1 Hour!",
@@ -102,6 +102,34 @@
     "icon": "media/bug.png",
     "description": "Run a successful debug session",
     "tier": "bronze",
+    "unlocked": false
+  },
+  {
+    "name": "🏅 Daily Driver",
+    "icon": "media/calendar.png",
+    "description": "Code for 7 days in a row",
+    "tier": "silver",
+    "unlocked": false
+  },
+  {
+    "name": "🏅 Code Streak Legend",
+    "icon": "media/streak.png",
+    "description": "Code for 30 days in a row",
+    "tier": "gold",
+    "unlocked": false
+  },
+  {
+    "name": "🧭 Explorer",
+    "icon": "media/compass.png",
+    "description": "Open 10 different files in one session",
+    "tier": "bronze",
+    "unlocked": false
+  },
+  {
+    "name": "🐞 Debugger Pro",
+    "icon": "media/debug-pro.png",
+    "description": "Fix 10 bugs in a single day",
+    "tier": "gold",
     "unlocked": false
   }
 ]
