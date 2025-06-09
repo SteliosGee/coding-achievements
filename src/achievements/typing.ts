@@ -53,16 +53,17 @@ vscode.workspace.onDidChangeTextDocument((event) => {
     totalCharacters += changeAmount;
     saveTotalCharacters(); // Save progress
 
-    if (addedCharacters >= 5) {
+    // Fixed thresholds to match achievement descriptions
+    if (addedCharacters >= 1000) {
         unlockAchievement(achievements, 'Fast Fingers', achievementsFilePath, sidebarProvider);
     }
-    if (addedCharacters >= 50) {
+    if (addedCharacters >= 10000) {
         unlockAchievement(achievements, 'Keyboard Warrior', achievementsFilePath, sidebarProvider);
     }
-    if (addedCharacters >= 500) {
+    if (addedCharacters >= 100000) {
         unlockAchievement(achievements, 'Code Ninja', achievementsFilePath, sidebarProvider);
     }
-    if (totalCharacters >= 10) {
+    if (totalCharacters >= 10000000) {
         unlockAchievement(achievements, 'Hacker Mode', achievementsFilePath, sidebarProvider);
     }
 });

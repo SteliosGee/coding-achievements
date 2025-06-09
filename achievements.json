@@ -61,5 +61,47 @@
     "description": "You have typed 10000000 characters in a total",
     "tier": "diamond",
     "unlocked": true
+  },
+  {
+    "name": "Night Owl",
+    "icon": "media/owl.png",
+    "description": "Code between midnight and 5am",
+    "tier": "silver",
+    "unlocked": true
+  },
+  {
+    "name": "Early Bird",
+    "icon": "media/bird.png",
+    "description": "Code between 5am and 9am",
+    "tier": "silver",
+    "unlocked": false
+  },
+  {
+    "name": "Polyglot Programmer",
+    "icon": "media/polyglot.png",
+    "description": "Use at least 3 different programming languages",
+    "tier": "silver",
+    "unlocked": false
+  },
+  {
+    "name": "Language Master",
+    "icon": "media/master.png",
+    "description": "Use at least 5 different programming languages",
+    "tier": "gold",
+    "unlocked": false
+  },
+  {
+    "name": "Commit Champion",
+    "icon": "media/git.png",
+    "description": "Make a Git commit from the editor",
+    "tier": "bronze",
+    "unlocked": false
+  },
+  {
+    "name": "Bug Squasher",
+    "icon": "media/bug.png",
+    "description": "Run a successful debug session",
+    "tier": "bronze",
+    "unlocked": false
   }
 ]
