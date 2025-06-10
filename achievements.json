@@ -4,7 +4,7 @@
     "icon": "media/achievement-icon.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": false
+    "unlocked": true
   },
   {
     "name": "🏆 Achievement Unlocked: Code for 1 Hour!",
@@ -39,7 +39,7 @@
     "icon": "media/achievement-icon.png",
     "description": "You have typed 1000 characters in a session",
     "tier": "bronze",
-    "unlocked": false
+    "unlocked": true
   },
   {
     "name": "Keyboard Warrior",
@@ -67,7 +67,7 @@
     "icon": "media/owl.png",
     "description": "Code between midnight and 5am",
     "tier": "silver",
-    "unlocked": true
+    "unlocked": false
   },
   {
     "name": "Early Bird",
