@@ -3,7 +3,6 @@ import { achievements } from './extension';
 
 export function getWebviewContent(view: vscode.WebviewView | undefined, context: vscode.ExtensionContext): string {
     // Group achievements by tier for better display
-    // (removed duplicate byTier declaration to avoid redeclaration error)
 
     interface Achievement {
         name: string;
