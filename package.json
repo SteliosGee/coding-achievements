@@ -1,63 +1,107 @@
 {
   "name": "coding-achievements",
   "displayName": "Coding Achievements",
-  "description": "Earn achievements while coding!",
+  "description": "🏆 Gamify your coding journey! Unlock achievements, build streaks, and celebrate programming milestones in VS Code.",
   "version": "0.0.1",
+  "publisher": "SteliosGee",
+  "author": {
+    "name": "Stelios Gee",
+    "email": "stelios.galegalidis@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/SteliosGee/coding-achievements#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SteliosGee/coding-achievements.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SteliosGee/coding-achievements/issues"
+  },
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Visualization"
   ],
+  "keywords": [
+    "achievements",
+    "gamification",
+    "progress",
+    "tracking",
+    "coding",
+    "productivity",
+    "stats",
+    "milestones"
+  ],
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onStartupFinished",
     "onDidSaveTextDocument",
     "workspaceContains:**/*"
   ],
   "main": "./out/extension.js",
-    "contributes": {
-      "viewsContainers": {
-        "activitybar": [
-          {
-            "id": "codingAchievements",
-            "title": "Achievements",
-            "icon": "media/badge.png"
-          }
-        ]
-      },
-      "views": {
-        "codingAchievements": [
-          {
-            "id": "coding-achievements-sidebar",
-            "name": "Achievements",
-            "type": "webview",
-            "icon": "media/badge.png"
-          }
-        ]
-      },
-      "commands": [
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
         {
-          "command": "coding-achievements.activate",
-          "title": "Activate Achievements"
-        },
-        {
-          "command": "coding-achievements.reset",
-          "title": "Clear Achievements"
-        },
-        {
-          "command": "git.commitWithInput",
-          "title": "Commit with Input"
+          "id": "codingAchievements",
+          "title": "Achievements",
+          "icon": "media/badge.png"
         }
       ]
     },
-  
+    "views": {
+      "codingAchievements": [
+        {
+          "id": "coding-achievements-sidebar",
+          "name": "Achievements",
+          "type": "webview",
+          "icon": "media/badge.png"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "coding-achievements.activate",
+        "title": "Coding Achievements: Activate",
+        "category": "Coding Achievements"
+      },
+      {
+        "command": "coding-achievements.reset",
+        "title": "Coding Achievements: Reset Progress",
+        "category": "Coding Achievements"
+      }
+    ],
+    "configuration": {
+      "title": "Coding Achievements",
+      "properties": {
+        "codingAchievements.enableNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notification when achievements are unlocked"
+        },
+        "codingAchievements.trackingEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic progress tracking"
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/vscode": "^1.96.0",
@@ -68,6 +112,7 @@
     "eslint": "^9.19.0",
     "typescript": "^5.7.3",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "vsce": "^2.15.0"
   }
 }
