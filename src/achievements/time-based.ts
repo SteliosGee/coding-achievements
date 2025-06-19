@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { unlockAchievement } from '../utils/unlockAchievement';
+import { updateUpgradableAchievement } from '../utils/upgradeableAchievement';
 import { achievements, achievementsFilePath, sidebarProvider } from '../extension';
 
 // Time tracking state
@@ -65,18 +66,8 @@ function stopTracking() {
 function checkTimeAchievements() {
     const totalHours = totalCodingTimeMs / (1000 * 60 * 60);
     
-    if (totalHours >= 1) {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: Code for 1 Hour!', achievementsFilePath, sidebarProvider);
-    }
-    if (totalHours >= 10) {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: Code for 10 Hours!', achievementsFilePath, sidebarProvider);
-    }
-    if (totalHours >= 100) {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: Code for 100 Hours!', achievementsFilePath, sidebarProvider);
-    }
-    if (totalHours >= 1000) {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: Code for 1000 Hours!', achievementsFilePath, sidebarProvider);
-    }
+    // Update upgradable time achievements
+    updateUpgradableAchievement(achievements, 'coding_time', totalHours, achievementsFilePath, sidebarProvider);
 }
 
 // Track when the user is active

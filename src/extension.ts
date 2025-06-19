@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { unlockAchievement } from './utils/unlockAchievement';
 import { getWebviewContent } from './webviewContent';
+import { initializeUpgradableAchievements } from './utils/initializeAchievements';
 
 export interface Achievement {
     name: string;
@@ -10,6 +11,16 @@ export interface Achievement {
     description: string;
     unlocked: boolean;
     tier: 'diamond' | 'gold' | 'silver' | 'bronze';
+    type?: 'upgradable' | 'unique';
+    baseId?: string; // For upgradable achievements
+    currentValue?: number; // Current progress value
+    currentTier?: number; // Current tier index (0-3)
+    tiers?: Array<{
+        name: string;
+        target: number;
+        tier: 'diamond' | 'gold' | 'silver' | 'bronze';
+        description: string;
+    }>;
 }
 
 export let achievements: Achievement[] = [];
@@ -31,10 +42,18 @@ export function activate(context: vscode.ExtensionContext) {
     // Function to reset all achievement trackers
     function resetAllAchievements() {
         try {
-            console.log('🔄 Starting achievement reset process...');
-            
-            // Reset all achievements to unlocked=false
-            achievements.forEach(a => a.unlocked = false);
+            console.log('🔄 Starting achievement reset process...');              // Reset all achievements to unlocked=false and reset progress
+            achievements.forEach(a => {
+                a.unlocked = false;
+                if (a.type === 'upgradable') {
+                    a.currentValue = 0;
+                    a.currentTier = 0;
+                    // Reset to bronze tier for display
+                    if (a.tiers && a.tiers.length > 0) {
+                        a.tier = a.tiers[0].tier;
+                    }
+                }
+            });
             
             // Save to file with pretty formatting
             fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2), 'utf8');
@@ -195,11 +214,9 @@ export function activate(context: vscode.ExtensionContext) {
         const totalCount = achievements.length;
         statusBarItem.tooltip = `${unlockedCount}/${totalCount} achievements unlocked`;
         console.log(`📊 Status bar updated: ${unlockedCount}/${totalCount} achievements`);
-    }
-
-    // Manual activation command
+    }    // Manual activation command
     let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
-        unlockAchievement(achievements, '🏆 Achievement Unlocked: First Save!', achievementsFilePath, sidebarProvider);
+        unlockAchievement(achievements, '🏆 First Save!', achievementsFilePath, sidebarProvider);
         updateStatusBar();
     });
 
@@ -210,9 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
         updateStatusBar();
     });
 
-    context.subscriptions.push(activateCommand, resetCommand);
-
-    // Register all achievement modules
+    context.subscriptions.push(activateCommand, resetCommand);    // Register all achievement modules
     require('./achievements/save');
     require('./achievements/typing');
     require('./achievements/time-based');
@@ -221,6 +236,9 @@ export function activate(context: vscode.ExtensionContext) {
     require('./achievements/git-debug');
     require('./achievements/daily-streaks');
     require('./achievements/file-explorer');
+    
+    // Initialize upgradable achievements with current progress
+    initializeUpgradableAchievements();
     
     // Update status bar on activation
     updateStatusBar();

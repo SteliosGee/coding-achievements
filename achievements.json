@@ -1,135 +1,198 @@
 [
   {
-    "name": "🏆 Achievement Unlocked: First Save!",
+    "name": "🏆 First Save!",
     "icon": "media/achievement-icon.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": false
+    "unlocked": true,
+    "type": "unique"
   },
   {
-    "name": "🏆 Achievement Unlocked: Code for 1 Hour!",
+    "name": "⏰ Coding Time Mastery",
     "icon": "media/achievement-icon.png",
-    "description": "You have coded for 1 hour!",
+    "description": "Track your total coding time",
     "tier": "bronze",
-    "unlocked": false
+    "unlocked": false,
+    "type": "upgradable",
+    "baseId": "coding_time",
+    "currentValue": 0.020468888888888887,
+    "currentTier": 0,
+    "tiers": [
+      {
+        "name": "Time Apprentice",
+        "target": 1,
+        "tier": "bronze",
+        "description": "Code for 1 hour total"
+      },
+      {
+        "name": "Time Journeyman",
+        "target": 10,
+        "tier": "silver",
+        "description": "Code for 10 hours total"
+      },
+      {
+        "name": "Time Master",
+        "target": 100,
+        "tier": "gold",
+        "description": "Code for 100 hours total"
+      },
+      {
+        "name": "Time Legend",
+        "target": 1000,
+        "tier": "diamond",
+        "description": "Code for 1000 hours total"
+      }
+    ]
   },
   {
-    "name": "🏆 Achievement Unlocked: Code for 10 Hours!",
+    "name": "⌨️ Typing Expertise",
     "icon": "media/achievement-icon.png",
-    "description": "You have coded for 10 hours!",
-    "tier": "silver",
-    "unlocked": false
-  },
-  {
-    "name": "🏆 Achievement Unlocked: Code for 100 Hours!",
-    "icon": "media/achievement-icon.png",
-    "description": "You have coded for 100 hours!",
+    "description": "Track your total characters typed",
     "tier": "gold",
-    "unlocked": false
+    "unlocked": true,
+    "type": "upgradable",
+    "baseId": "typing",
+    "currentValue": 101419,
+    "currentTier": 2,
+    "tiers": [
+      {
+        "name": "Typing Novice",
+        "target": 1000,
+        "tier": "bronze",
+        "description": "Type 1,000 characters total"
+      },
+      {
+        "name": "Typing Warrior",
+        "target": 10000,
+        "tier": "silver",
+        "description": "Type 10,000 characters total"
+      },
+      {
+        "name": "Typing Master",
+        "target": 100000,
+        "tier": "gold",
+        "description": "Type 100,000 characters total"
+      },
+      {
+        "name": "Typing Legend",
+        "target": 1000000,
+        "tier": "diamond",
+        "description": "Type 1,000,000 characters total"
+      }
+    ]
   },
   {
-    "name": "🏆 Achievement Unlocked: Code for 1000 Hours!",
-    "icon": "media/achievement-icon.png",
-    "description": "You have coded for 1000 hours!",
-    "tier": "diamond",
-    "unlocked": false
-  },
-  {
-    "name": "Fast Fingers",
-    "icon": "media/achievement-icon.png",
-    "description": "You have typed 1000 characters in a session",
+    "name": "🏅 Daily Consistency",
+    "icon": "media/calendar.png",
+    "description": "Build daily coding streaks",
     "tier": "bronze",
-    "unlocked": false
+    "unlocked": false,
+    "type": "upgradable",
+    "baseId": "daily_streak",
+    "currentValue": 1,
+    "currentTier": 0,
+    "tiers": [
+      {
+        "name": "Streak Starter",
+        "target": 3,
+        "tier": "bronze",
+        "description": "Code for 3 days in a row"
+      },
+      {
+        "name": "Streak Builder",
+        "target": 7,
+        "tier": "silver",
+        "description": "Code for 7 days in a row"
+      },
+      {
+        "name": "Streak Master",
+        "target": 30,
+        "tier": "gold",
+        "description": "Code for 30 days in a row"
+      },
+      {
+        "name": "Streak Legend",
+        "target": 100,
+        "tier": "diamond",
+        "description": "Code for 100 days in a row"
+      }
+    ]
   },
   {
-    "name": "Keyboard Warrior",
-    "icon": "media/achievement-icon.png",
-    "description": "You have typed 10000 characters in a session",
-    "tier": "silver",
-    "unlocked": false
+    "name": "🌍 Language Diversity",
+    "icon": "media/polyglot.png",
+    "description": "Use different programming languages",
+    "tier": "bronze",
+    "unlocked": false,
+    "type": "upgradable",
+    "baseId": "languages",
+    "currentValue": 0,
+    "currentTier": 0,
+    "tiers": [
+      {
+        "name": "Language Explorer",
+        "target": 3,
+        "tier": "bronze",
+        "description": "Use 3 different programming languages"
+      },
+      {
+        "name": "Language Expert",
+        "target": 5,
+        "tier": "silver",
+        "description": "Use 5 different programming languages"
+      },
+      {
+        "name": "Language Master",
+        "target": 10,
+        "tier": "gold",
+        "description": "Use 10 different programming languages"
+      },
+      {
+        "name": "Language Polyglot",
+        "target": 20,
+        "tier": "diamond",
+        "description": "Use 20 different programming languages"
+      }
+    ]
   },
   {
-    "name": "Code Ninja",
-    "icon": "media/achievement-icon.png",
-    "description": "You have typed 100000 characters in a session",
-    "tier": "gold",
-    "unlocked": false
-  },
-  {
-    "name": "Hacker Mode",
-    "icon": "media/achievement-icon.png",
-    "description": "You have typed 10000000 characters in a total",
-    "tier": "diamond",
-    "unlocked": false
-  },
-  {
-    "name": "Night Owl",
+    "name": "🌙 Night Owl",
     "icon": "media/owl.png",
     "description": "Code between midnight and 5am",
     "tier": "silver",
-    "unlocked": false
+    "unlocked": true,
+    "type": "unique"
   },
   {
-    "name": "Early Bird",
+    "name": "🐦 Early Bird",
     "icon": "media/bird.png",
     "description": "Code between 5am and 9am",
     "tier": "silver",
-    "unlocked": false
+    "unlocked": false,
+    "type": "unique"
   },
   {
-    "name": "Polyglot Programmer",
-    "icon": "media/polyglot.png",
-    "description": "Use at least 3 different programming languages",
-    "tier": "silver",
-    "unlocked": false
-  },
-  {
-    "name": "Language Master",
-    "icon": "media/master.png",
-    "description": "Use at least 5 different programming languages",
-    "tier": "gold",
-    "unlocked": false
-  },
-  {
-    "name": "Commit Champion",
+    "name": "💾 Commit Champion",
     "icon": "media/git.png",
-    "description": "Make a Git commit from the editor",
+    "description": "Make your first Git commit",
     "tier": "bronze",
-    "unlocked": false
+    "unlocked": false,
+    "type": "unique"
   },
   {
-    "name": "Bug Squasher",
+    "name": "🐛 Bug Squasher",
     "icon": "media/bug.png",
-    "description": "Run a successful debug session",
+    "description": "Complete your first debug session",
     "tier": "bronze",
-    "unlocked": false
-  },
-  {
-    "name": "🏅 Daily Driver",
-    "icon": "media/calendar.png",
-    "description": "Code for 7 days in a row",
-    "tier": "silver",
-    "unlocked": false
-  },
-  {
-    "name": "🏅 Code Streak Legend",
-    "icon": "media/streak.png",
-    "description": "Code for 30 days in a row",
-    "tier": "gold",
-    "unlocked": false
+    "unlocked": false,
+    "type": "unique"
   },
   {
     "name": "🧭 Explorer",
     "icon": "media/compass.png",
     "description": "Open 10 different files in one session",
     "tier": "bronze",
-    "unlocked": false
-  },
-  {
-    "name": "🐞 Debugger Pro",
-    "icon": "media/debug-pro.png",
-    "description": "Fix 10 bugs in a single day",
-    "tier": "gold",
-    "unlocked": false
+    "unlocked": false,
+    "type": "unique"
   }
 ]

@@ -11,13 +11,13 @@ function checkTimeOfDay() {
     
     // Night Owl: coding between midnight and 5am
     if (!nightOwlChecked && (hour >= 0 && hour < 5)) {
-        unlockAchievement(achievements, 'Night Owl', achievementsFilePath, sidebarProvider);
+        unlockAchievement(achievements, '🌙 Night Owl', achievementsFilePath, sidebarProvider);
         nightOwlChecked = true;
     }
     
     // Early Bird: coding between 5am and 9am
     if (!earlyBirdChecked && (hour >= 5 && hour < 9)) {
-        unlockAchievement(achievements, 'Early Bird', achievementsFilePath, sidebarProvider);
+        unlockAchievement(achievements, '🐦 Early Bird', achievementsFilePath, sidebarProvider);
         earlyBirdChecked = true;
     }
 }

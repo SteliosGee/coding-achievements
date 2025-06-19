@@ -10,8 +10,7 @@ vscode.window.onDidChangeActiveTextEditor(editor => {
     if (editor && editor.document && editor.document.uri) {
         // Add this file to our set of opened files
         openedFiles.add(editor.document.uri.toString());
-        
-        // Check for achievement
+          // Check for achievement
         if (openedFiles.size >= 10) {
             unlockAchievement(achievements, '🧭 Explorer', achievementsFilePath, sidebarProvider);
         }

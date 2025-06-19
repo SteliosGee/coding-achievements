@@ -5,7 +5,7 @@ import { recordDebugFix } from './daily-streaks';
 
 // Track Git operations - use a unique command name
 const disposable = vscode.commands.registerCommand('coding-achievements.trackGitCommit', () => {
-    unlockAchievement(achievements, 'Commit Champion', achievementsFilePath, sidebarProvider);
+    unlockAchievement(achievements, '💾 Commit Champion', achievementsFilePath, sidebarProvider);
 });
 
 // Listen to git extension's commit event instead of trying to override it
@@ -20,7 +20,7 @@ try {
         if (api) {
             api.onDidChangeRepository((e: any) => {
                 // This will fire when repository state changes (like after commits)
-                unlockAchievement(achievements, 'Commit Champion', achievementsFilePath, sidebarProvider);
+                unlockAchievement(achievements, '💾 Commit Champion', achievementsFilePath, sidebarProvider);
             });
         }
     }
@@ -43,7 +43,7 @@ vscode.commands.registerCommand('git.commitWithInput', async (args: any) => {
 
 // Track debugging sessions
 vscode.debug.onDidStartDebugSession(() => {
-    unlockAchievement(achievements, 'Bug Squasher', achievementsFilePath, sidebarProvider);
+    unlockAchievement(achievements, '🐛 Bug Squasher', achievementsFilePath, sidebarProvider);
 });
 
 // When debugging ends successfully, there's a chance it was fixing a bug

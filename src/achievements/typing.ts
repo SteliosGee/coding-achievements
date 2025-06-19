@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { unlockAchievement } from '../utils/unlockAchievement'; // Import the unlockAchievement function
-import { achievements, achievementsFilePath, sidebarProvider } from '../extension'; // Import necessary variables
+import { unlockAchievement } from '../utils/unlockAchievement';
+import { updateUpgradableAchievement } from '../utils/upgradeableAchievement';
+import { achievements, achievementsFilePath, sidebarProvider } from '../extension';
 
-let addedCharacters: number = 0;
 let totalCharacters: number = 0;
 const totalCharactersFilePath = path.join(__dirname, 'totalCharacters.json');
 
@@ -32,7 +32,6 @@ function saveTotalCharacters() {
 
 // Function to reset character counts
 export function resetCharacterCounts() {
-    addedCharacters = 0;
     totalCharacters = 0;
     saveTotalCharacters();
 }
@@ -49,26 +48,11 @@ vscode.workspace.onDidChangeTextDocument((event) => {
         }
     });
     
-    addedCharacters += changeAmount;
-    totalCharacters += changeAmount;
-    saveTotalCharacters(); // Save progress
-
-    // Fixed thresholds to match achievement descriptions
-    if (addedCharacters >= 1000) {
-        unlockAchievement(achievements, 'Fast Fingers', achievementsFilePath, sidebarProvider);
+    if (changeAmount > 0) {
+        totalCharacters += changeAmount;
+        saveTotalCharacters(); // Save progress
+        
+        // Update upgradable typing achievements
+        updateUpgradableAchievement(achievements, 'typing', totalCharacters, achievementsFilePath, sidebarProvider);
     }
-    if (addedCharacters >= 10000) {
-        unlockAchievement(achievements, 'Keyboard Warrior', achievementsFilePath, sidebarProvider);
-    }
-    if (addedCharacters >= 100000) {
-        unlockAchievement(achievements, 'Code Ninja', achievementsFilePath, sidebarProvider);
-    }
-    if (totalCharacters >= 10000000) {
-        unlockAchievement(achievements, 'Hacker Mode', achievementsFilePath, sidebarProvider);
-    }
-});
-
-// Reset the added characters counter when a document is closed
-vscode.workspace.onDidCloseTextDocument(() => {
-    addedCharacters = 0;
 });

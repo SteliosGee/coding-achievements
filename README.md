@@ -4,22 +4,36 @@ Turn your coding journey into an epic adventure! Unlock achievements, build stre
 
 ## ✨ Features
 
-### 🎯 Achievement System
-Earn achievements across multiple categories:
+## 🚀 Achievement System
 
-- **⏰ Time-Based Achievements**: Code for 1, 10, 100, or even 1000 hours!
-- **⌨️ Typing Achievements**: From "Fast Fingers" (1K characters) to "Hacker Mode" (10M characters total)
-- **🌙 Time-of-Day Achievements**: Become a "Night Owl" or "Early Bird" based on your coding schedule
-- **🌍 Language Mastery**: Unlock "Polyglot Programmer" and "Language Master" by coding in multiple languages
-- **🔧 Git & Debug**: Earn "Commit Champion" and "Bug Squasher" badges
-- **🏅 Daily Streaks**: Build consistency with "Daily Driver" (7 days) and "Code Streak Legend" (30 days)
-- **🧭 Exploration**: Discover new codebases with the "Explorer" achievement
+### 🎯 Two Types of Achievements
+
+**🏆 Upgradable Achievements**
+Progressive achievements that grow with you through multiple tiers:
+- **Bronze → Silver → Gold → Diamond**
+- Show real-time progress bars
+- Display progress toward next tier
+- Unlock incrementally as you improve
+
+Examples:
+- **⏰ Coding Time Mastery**: 1hr → 10hrs → 100hrs → 1000hrs
+- **⌨️ Typing Expertise**: 1K → 10K → 100K → 1M characters
+- **🏅 Daily Consistency**: 3 → 7 → 30 → 100 day streaks
+- **🌍 Language Diversity**: 3 → 5 → 10 → 20 languages
+
+**🎯 Unique Achievements**
+Special one-time unlocks for specific accomplishments:
+- **🌙 Night Owl**: Code between midnight and 5am
+- **🐦 Early Bird**: Code between 5am and 9am  
+- **💾 Commit Champion**: Make your first Git commit
+- **🐛 Bug Squasher**: Complete your first debug session
+- **🧭 Explorer**: Open 10 different files in one session
 
 ### 📊 Progress Tracking
-- **Visual Progress Bar**: See your overall achievement completion at a glance
-- **Tier System**: Bronze, Silver, Gold, and Diamond achievements with beautiful visual effects
-- **Real-time Updates**: Achievements unlock instantly as you code
-- **Persistent Progress**: Your achievements are saved and persist across VS Code sessions
+- **Visual Progress Bars**: See your progress toward the next tier for upgradable achievements
+- **Real-time Updates**: Progress updates instantly as you code
+- **Persistent Storage**: All progress is saved between VS Code sessions
+- **Smart Grouping**: Upgradable achievements are grouped by category, unique achievements by tier
 
 ### 🎨 Beautiful UI
 - **Sidebar Integration**: Dedicated achievements panel in your activity bar
@@ -55,31 +69,43 @@ Earn achievements across multiple categories:
 
 ## 🏅 Achievement Categories
 
-### 🥉 Bronze Tier
-- 🏆 First Save
-- ⚡ Fast Fingers (1K characters)
-- 🎯 Commit Champion
-- 🐛 Bug Squasher
-- 🧭 Explorer (10 files)
+### 🏆 Upgradable Achievement Series
 
-### 🥈 Silver Tier
-- ⏰ Code for 10 Hours
-- ⌨️ Keyboard Warrior (10K characters)
-- 🌙 Night Owl (coding midnight-5am)
-- 🐦 Early Bird (coding 5am-9am)
-- 🌍 Polyglot Programmer (3+ languages)
-- 🏅 Daily Driver (7-day streak)
+#### ⏰ **Coding Time Mastery**
+- 🥉 **Time Apprentice** (1 hour total)
+- 🥈 **Time Journeyman** (10 hours total)  
+- 🥇 **Time Master** (100 hours total)
+- 💎 **Time Legend** (1000 hours total)
 
-### 🥇 Gold Tier
-- ⏰ Code for 100 Hours
-- ⌨️ Code Ninja (100K characters)
-- 🌍 Language Master (5+ languages)
-- 🏅 Code Streak Legend (30-day streak)
-- 🐞 Debugger Pro (10 fixes/day)
+#### ⌨️ **Typing Expertise**
+- 🥉 **Typing Novice** (1K characters)
+- 🥈 **Typing Warrior** (10K characters)
+- 🥇 **Typing Master** (100K characters)  
+- 💎 **Typing Legend** (1M characters)
 
-### 💎 Diamond Tier
-- ⏰ Code for 1000 Hours
-- ⌨️ Hacker Mode (10M total characters)
+#### 🏅 **Daily Consistency**
+- 🥉 **Streak Starter** (3 days in a row)
+- 🥈 **Streak Builder** (7 days in a row)
+- 🥇 **Streak Master** (30 days in a row)
+- 💎 **Streak Legend** (100 days in a row)
+
+#### 🌍 **Language Diversity**
+- 🥉 **Language Explorer** (3 languages)
+- 🥈 **Language Expert** (5 languages)  
+- 🥇 **Language Master** (10 languages)
+- 💎 **Language Polyglot** (20 languages)
+
+### 🎯 Unique Achievement Collection
+
+#### 🥈 Silver Tier
+- 🌙 **Night Owl** - Code between midnight and 5am
+- 🐦 **Early Bird** - Code between 5am and 9am
+
+#### 🥉 Bronze Tier  
+- 🏆 **First Save** - Save your first file
+- 💾 **Commit Champion** - Make your first Git commit
+- 🐛 **Bug Squasher** - Complete your first debug session
+- 🧭 **Explorer** - Open 10 different files in one session
 
 ## ⚙️ Commands
 
@@ -127,11 +153,21 @@ Found a bug or have a feature request? Feel free to open an issue or submit a pu
 
 ## 🎯 Tips for Achievement Hunters
 
-- **Consistency is Key**: Code a little bit every day to build your streak
-- **Explore New Languages**: Try different programming languages to unlock polyglot achievements
-- **Debug Actively**: Use VS Code's debugging features to unlock debug-related achievements
+### 🏆 **Upgradable Achievement Strategies**
+- **Focus on Progress**: Watch the progress bars to see how close you are to the next tier
+- **Consistency Beats Intensity**: Regular coding sessions help build streaks and time-based achievements
+- **Diversify Your Skills**: Try different programming languages to progress through Language Diversity tiers
+- **Track Your Growth**: Use the progress indicators to set personal coding goals
+
+### 🎯 **Unique Achievement Hunting**
+- **Time-Based Coding**: Code during different hours to unlock Night Owl and Early Bird
+- **Explore Actively**: Open different files and use debugging features
+- **Git Integration**: Make commits and use version control for development achievements
+
+### 📊 **General Tips**
 - **Stay Active**: The extension tracks active coding time, so keep those fingers moving!
-- **Git Frequently**: Regular commits help unlock version control achievements
+- **Check Progress Regularly**: Use the refresh button to update your achievement display
+- **Set Daily Goals**: Aim for small daily progress to maintain momentum
 
 ## 📞 Support
 

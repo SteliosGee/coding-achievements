@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { unlockAchievement } from '../utils/unlockAchievement';
+import { updateUpgradableAchievement } from '../utils/upgradeableAchievement';
 import { achievements, achievementsFilePath, sidebarProvider } from '../extension';
 
 // Data structure to track daily coding
@@ -117,14 +118,8 @@ function updateDailyStreak() {
     // Save changes
     saveStreakData();
     
-    // Check for achievements
-    if (streakData.currentStreak >= 7) {
-        unlockAchievement(achievements, '🏅 Daily Driver', achievementsFilePath, sidebarProvider);
-    }
-    
-    if (streakData.currentStreak >= 30) {
-        unlockAchievement(achievements, '🏅 Code Streak Legend', achievementsFilePath, sidebarProvider);
-    }
+    // Update upgradable streak achievements
+    updateUpgradableAchievement(achievements, 'daily_streak', streakData.currentStreak, achievementsFilePath, sidebarProvider);
 }
 
 // Record a debug fix

@@ -1,29 +1,41 @@
 import * as vscode from 'vscode';
-import { achievements } from './extension';
+import { achievements, Achievement } from './extension';
+import { getProgressPercentage, getProgressText, getCurrentTierName, getCurrentTierDescription } from './utils/upgradeableAchievement';
+
+interface AchievementsByTier {
+    diamond: Achievement[];
+    gold: Achievement[];
+    silver: Achievement[];
+    bronze: Achievement[];
+}
+
+interface AchievementsByType {
+    upgradable: { [baseId: string]: Achievement[] };
+    unique: Achievement[];
+}
 
 export function getWebviewContent(view: vscode.WebviewView | undefined, context: vscode.ExtensionContext): string {
-    // Group achievements by tier for better display
+    // Group by type first
+    const byType: AchievementsByType = {
+        upgradable: {},
+        unique: []
+    };
 
-    interface Achievement {
-        name: string;
-        description: string;
-        tier: 'diamond' | 'gold' | 'silver' | 'bronze';
-        unlocked: boolean;
-        icon: string;
-    }
+    achievements.forEach((ach: Achievement) => {
+        if (ach.type === 'upgradable' && ach.baseId) {
+            // For the new system, each upgradable achievement is a single evolving achievement
+            byType.upgradable[ach.baseId] = [ach]; // Single achievement per baseId
+        } else {
+            byType.unique.push(ach);
+        }
+    });
 
-    interface AchievementsByTier {
-        diamond: Achievement[];
-        gold: Achievement[];
-        silver: Achievement[];
-        bronze: Achievement[];
-    }
-
+    // Group unique achievements by tier
     const byTier: AchievementsByTier = {
-        diamond: achievements.filter((a: Achievement) => a.tier === 'diamond'),
-        gold: achievements.filter((a: Achievement) => a.tier === 'gold'),
-        silver: achievements.filter((a: Achievement) => a.tier === 'silver'),
-        bronze: achievements.filter((a: Achievement) => a.tier === 'bronze')
+        diamond: byType.unique.filter((a: Achievement) => a.tier === 'diamond'),
+        gold: byType.unique.filter((a: Achievement) => a.tier === 'gold'),
+        silver: byType.unique.filter((a: Achievement) => a.tier === 'silver'),
+        bronze: byType.unique.filter((a: Achievement) => a.tier === 'bronze')
     };
 
     return `
@@ -63,11 +75,14 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         border-radius: 5px;
                         transition: transform 0.2s ease, box-shadow 0.2s ease;
                         width: 80px;
-                        height: 80px;
+                        min-height: 80px;
+                    }
+                    .achievement.upgradable {
+                        min-height: 100px;
                     }
                     .achievement .tooltip {
                         visibility: hidden;
-                        width: 150px;
+                        width: 180px;
                         background-color: var(--vscode-editor-background);
                         color: var(--vscode-foreground);
                         text-align: center;
@@ -77,11 +92,12 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         z-index: 1;
                         bottom: 125%;
                         left: 50%;
-                        margin-left: -75px;
+                        margin-left: -90px;
                         opacity: 0;
                         transition: opacity 0.3s;
                         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                         pointer-events: none;
+                        font-size: 11px;
                     }
                     .achievement:hover {
                         transform: scale(1.15);
@@ -103,6 +119,36 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         overflow: hidden;
                         text-overflow: ellipsis;
                         white-space: nowrap;
+                    }
+                    .progress-mini {
+                        width: 70px;
+                        height: 4px;
+                        background-color: var(--vscode-editor-inactiveSelectionBackground);
+                        border-radius: 2px;
+                        margin-top: 3px;
+                        overflow: hidden;
+                    }
+                    .progress-mini-bar {
+                        height: 100%;
+                        border-radius: 2px;
+                        transition: width 0.3s ease;
+                    }
+                    .progress-mini-bar.bronze {
+                        background: linear-gradient(90deg, #cd7f32, #ff9500);
+                    }
+                    .progress-mini-bar.silver {
+                        background: linear-gradient(90deg, #c0c0c0, #e8e8e8);
+                    }
+                    .progress-mini-bar.gold {
+                        background: linear-gradient(90deg, #ffd700, #ffed4e);
+                    }
+                    .progress-mini-bar.diamond {
+                        background: linear-gradient(90deg, #b9f2ff, #00d4ff);
+                    }
+                    .progress-text {
+                        font-size: 8px;
+                        margin-top: 2px;
+                        opacity: 0.8;
                     }
                     .diamond {
                         border: 2px solid #b9f2ff;
@@ -182,13 +228,60 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 
                 <h3>Progress: ${(achievements as Achievement[]).filter((a: Achievement) => a.unlocked).length} / ${(achievements as Achievement[]).length}</h3>
                 
-                ${(['diamond', 'gold', 'silver', 'bronze'] as Array<keyof AchievementsByTier>).map((tier: keyof AchievementsByTier) => `
+                <!-- Upgradable Achievement Series -->
+                <h2 style="margin-top: 30px; text-align: left; width: 100%; border-bottom: 2px solid var(--vscode-editorGroup-border);">🏆 Upgradable Achievements</h2>
+                ${Object.entries(byType.upgradable).map(([baseId, achievementArray]) => {
+                    const seriesNames: { [key: string]: string } = {
+                        'coding_time': '⏰ Coding Time Mastery',
+                        'typing': '⌨️ Typing Expertise', 
+                        'daily_streak': '🏅 Daily Consistency',
+                        'languages': '🌍 Language Diversity'
+                    };
+                    const seriesName = seriesNames[baseId] || baseId;
+                    const ach = achievementArray[0]; // Single achievement per series now
+                    
+                    const progressPercentage = getProgressPercentage(ach);
+                    const progressText = getProgressText(ach);
+                    const currentTierName = getCurrentTierName(ach);
+                    const currentTierDescription = getCurrentTierDescription(ach);
+                    
+                    return `
+                    <h3 class="tier-heading">${seriesName}</h3>
+                    <div class="achievements-grid">
+                        <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'} upgradable">
+                            <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                            <div class="achievement-name">${currentTierName}</div>
+                            <div class="progress-mini">
+                                <div class="progress-mini-bar ${ach.tier}" style="width: ${progressPercentage}%"></div>
+                            </div>
+                            <div class="progress-text">${progressText}</div>
+                            <div class="tooltip">
+                                <strong>${ach.name}</strong><br>
+                                <strong>Current: ${currentTierName}</strong><br>
+                                ${currentTierDescription}<br>
+                                <em>Progress: ${progressText}</em><br>
+                                <em>Current Tier: ${ach.tier}</em><br>
+                                <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('')}
+                
+                <!-- Unique Achievements by Tier -->
+                <h2 style="margin-top: 30px; text-align: left; width: 100%; border-bottom: 2px solid var(--vscode-editorGroup-border);">🎯 Unique Achievements</h2>
+                ${(['diamond', 'gold', 'silver', 'bronze'] as Array<keyof AchievementsByTier>).map((tier: keyof AchievementsByTier) => {
+                    if (byTier[tier].length === 0) {
+                        return '';
+                    }
+                    
+                    return `
                     <h3 class="tier-heading">${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier</h3>
                     <div class="achievements-grid">
                         ${byTier[tier].map((ach: Achievement) => `
                             <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'}">
                                 <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
-                                <div class="achievement-name">${ach.name.replace('🏆 Achievement Unlocked: ', '')}</div>
+                                <div class="achievement-name">${ach.name.replace(/^[^a-zA-Z]*/, '')}</div>
                                 <div class="tooltip">
                                     <strong>${ach.name}</strong><br>
                                     ${ach.description}<br>
@@ -198,57 +291,49 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                             </div>
                         `).join('')}
                     </div>
-                `).join('')}
+                    `;
+                }).join('')}
                 
                 <div class="button-container">
-<button class="refresh-btn">Refresh</button>
-<button class="reset-btn">Reset All Progress</button>
-
+                    <button class="refresh-btn" onclick="refreshAchievements()">🔄 Refresh</button>
+                    <button class="reset-btn" onclick="resetAchievements()">🗑️ Reset Progress</button>
                 </div>
                 
-<script>
-    const vscode = acquireVsCodeApi();
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const refreshBtn = document.querySelector('.refresh-btn');
-        const resetBtn = document.querySelector('.reset-btn');
-
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                vscode.postMessage({ command: 'refresh' });
-            });
-        }
-
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                    resetBtn.textContent = 'Resetting...';
-                    resetBtn.disabled = true;
-                    vscode.postMessage({ command: 'reset' });
-                
-            });
-        }
-    });
-
-    window.addEventListener('message', event => {
-        const message = event.data;
-        if (message.command === 'resetComplete') {
-            const resetBtn = document.querySelector('.reset-btn');
-            if (resetBtn) {
-                resetBtn.textContent = 'Reset All Progress';
-                resetBtn.disabled = false;
-            }
-
-            if (message.success) {
-                const successMsg = document.createElement('div');
-                successMsg.textContent = 'Reset successful!';
-                successMsg.style.color = 'green';
-                document.body.appendChild(successMsg);
-                setTimeout(() => successMsg.remove(), 3000);
-            }
-        }
-    });
-</script>
-
+                <script>
+                    const vscode = acquireVsCodeApi();
+                    
+                    function refreshAchievements() {
+                        vscode.postMessage({ command: 'refresh' });
+                    }
+                    
+                    function resetAchievements() {
+                        if (confirm('⚠️ This will reset ALL achievement progress. Are you sure?')) {
+                            vscode.postMessage({ command: 'reset' });
+                        }
+                    }
+                    
+                    // Listen for messages from the extension
+                    window.addEventListener('message', event => {
+                        const message = event.data;
+                        switch (message.command) {
+                            case 'resetComplete':
+                                if (message.success) {
+                                    // Show success feedback
+                                    const successMsg = document.createElement('div');
+                                    successMsg.textContent = '✅ All achievements have been reset!';
+                                    successMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--vscode-notifications-background);color:var(--vscode-notifications-foreground);padding:20px;border-radius:8px;z-index:1000;';
+                                    document.body.appendChild(successMsg);
+                                    setTimeout(() => successMsg.remove(), 3000);
+                                    
+                                    // Refresh the view
+                                    setTimeout(() => {
+                                        vscode.postMessage({ command: 'refresh' });
+                                    }, 1000);
+                                }
+                                break;
+                        }
+                    });
+                </script>
             </body>
         </html>
     `;
