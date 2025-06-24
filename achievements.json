@@ -4,7 +4,7 @@
     "icon": "media/achievement-icon.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": true,
+    "unlocked": false,
     "type": "unique"
   },
   {
@@ -15,7 +15,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0.020468888888888887,
+    "currentValue": 0,
     "currentTier": 0,
     "tiers": [
       {
@@ -48,12 +48,12 @@
     "name": "⌨️ Typing Expertise",
     "icon": "media/achievement-icon.png",
     "description": "Track your total characters typed",
-    "tier": "gold",
-    "unlocked": true,
+    "tier": "bronze",
+    "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 101419,
-    "currentTier": 2,
+    "currentValue": 0,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Typing Novice",
@@ -89,7 +89,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "daily_streak",
-    "currentValue": 1,
+    "currentValue": 0,
     "currentTier": 0,
     "tiers": [
       {
@@ -160,7 +160,7 @@
     "icon": "media/owl.png",
     "description": "Code between midnight and 5am",
     "tier": "silver",
-    "unlocked": true,
+    "unlocked": false,
     "type": "unique"
   },
   {

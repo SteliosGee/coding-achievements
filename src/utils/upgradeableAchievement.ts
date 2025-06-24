@@ -20,7 +20,7 @@ export function updateUpgradableAchievement(
     achievement.currentValue = currentValue;
     
     // Determine current tier based on progress
-    let newTier = 0;
+    let newTier = -1; // Start with -1 (no tier achieved)
     let hasUnlocked = false;
     
     for (let i = 0; i < achievement.tiers.length; i++) {
@@ -32,7 +32,7 @@ export function updateUpgradableAchievement(
     }
     
     // Check if we've progressed to a higher tier
-    if (newTier > (achievement.currentTier || 0)) {
+    if (newTier > (achievement.currentTier || -1)) {
         achievement.currentTier = newTier;
         hasUnlocked = true;
         
@@ -43,14 +43,18 @@ export function updateUpgradableAchievement(
         
         // Show notification for tier upgrade
         vscode.window.showInformationMessage(`🏆 ${currentTierInfo.name} unlocked! (${achievement.name})`);
-    } else if (newTier >= 0) {
+    } else {
         // Update tier info even if not newly unlocked
-        const currentTierInfo = achievement.tiers[newTier];
-        achievement.tier = currentTierInfo.tier;
         achievement.currentTier = newTier;
         
-        if (currentValue >= currentTierInfo.target) {
+        if (newTier >= 0) {
+            const currentTierInfo = achievement.tiers[newTier];
+            achievement.tier = currentTierInfo.tier;
             achievement.unlocked = true;
+        } else {
+            // No tier achieved yet, set to bronze and locked
+            achievement.tier = achievement.tiers[0].tier;
+            achievement.unlocked = false;
         }
     }
     
@@ -73,7 +77,13 @@ export function getProgressPercentage(achievement: Achievement): number {
         return 100;
     }
     
-    const currentTierTarget = currentTierIndex >= 0 ? achievement.tiers[currentTierIndex].target : 0;
+    // If we haven't reached the first tier yet
+    if (currentTierIndex < 0) {
+        const firstTierTarget = achievement.tiers[0].target;
+        return Math.min((achievement.currentValue / firstTierTarget) * 100, 100);
+    }
+    
+    const currentTierTarget = achievement.tiers[currentTierIndex].target;
     const nextTierTarget = achievement.tiers[nextTierIndex].target;
     
     // Calculate progress between current tier and next tier
@@ -88,11 +98,18 @@ export function getProgressText(achievement: Achievement): string {
         return '0 / 0';
     }
     
-    const nextTierIndex = achievement.currentTier + 1;
+    const currentTierIndex = achievement.currentTier;
+    const nextTierIndex = currentTierIndex + 1;
     
     // If we're at the max tier
     if (nextTierIndex >= achievement.tiers.length) {
         return 'MAX LEVEL';
+    }
+    
+    // If we haven't reached the first tier yet, show progress toward first tier
+    if (currentTierIndex < 0) {
+        const firstTierTarget = achievement.tiers[0].target;
+        return `${achievement.currentValue.toLocaleString()} / ${firstTierTarget.toLocaleString()}`;
     }
     
     const nextTierTarget = achievement.tiers[nextTierIndex].target;
@@ -104,8 +121,13 @@ export function getCurrentTierName(achievement: Achievement): string {
         return achievement.name;
     }
     
-    if (achievement.currentTier < 0 || achievement.currentTier >= achievement.tiers.length) {
+    // If we haven't reached the first tier yet, show the first tier name as the target
+    if (achievement.currentTier < 0) {
         return achievement.tiers[0].name;
+    }
+    
+    if (achievement.currentTier >= achievement.tiers.length) {
+        return achievement.tiers[achievement.tiers.length - 1].name;
     }
     
     return achievement.tiers[achievement.currentTier].name;
@@ -116,8 +138,13 @@ export function getCurrentTierDescription(achievement: Achievement): string {
         return achievement.description;
     }
     
-    if (achievement.currentTier < 0 || achievement.currentTier >= achievement.tiers.length) {
+    // If we haven't reached the first tier yet, show the first tier description
+    if (achievement.currentTier < 0) {
         return achievement.tiers[0].description;
+    }
+    
+    if (achievement.currentTier >= achievement.tiers.length) {
+        return achievement.tiers[achievement.tiers.length - 1].description;
     }
     
     return achievement.tiers[achievement.currentTier].description;

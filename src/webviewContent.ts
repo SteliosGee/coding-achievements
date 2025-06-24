@@ -228,8 +228,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 
                 <h3>Progress: ${(achievements as Achievement[]).filter((a: Achievement) => a.unlocked).length} / ${(achievements as Achievement[]).length}</h3>
                 
-                <!-- Upgradable Achievement Series -->
-                <h2 style="margin-top: 30px; text-align: left; width: 100%; border-bottom: 2px solid var(--vscode-editorGroup-border);">🏆 Upgradable Achievements</h2>
+                <!-- Upgradable Achievement Categories -->
                 ${Object.entries(byType.upgradable).map(([baseId, achievementArray]) => {
                     const seriesNames: { [key: string]: string } = {
                         'coding_time': '⏰ Coding Time Mastery',
@@ -256,11 +255,11 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                             </div>
                             <div class="progress-text">${progressText}</div>
                             <div class="tooltip">
-                                <strong>${ach.name}</strong><br>
-                                <strong>Current: ${currentTierName}</strong><br>
+                                <strong>${seriesName}</strong><br>
+                                <strong>Current Tier: ${currentTierName}</strong><br>
                                 ${currentTierDescription}<br>
                                 <em>Progress: ${progressText}</em><br>
-                                <em>Current Tier: ${ach.tier}</em><br>
+                                <em>Tier Level: ${ach.tier}</em><br>
                                 <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
                             </div>
                         </div>
@@ -268,31 +267,37 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                     `;
                 }).join('')}
                 
-                <!-- Unique Achievements by Tier -->
-                <h2 style="margin-top: 30px; text-align: left; width: 100%; border-bottom: 2px solid var(--vscode-editorGroup-border);">🎯 Unique Achievements</h2>
-                ${(['diamond', 'gold', 'silver', 'bronze'] as Array<keyof AchievementsByTier>).map((tier: keyof AchievementsByTier) => {
-                    if (byTier[tier].length === 0) {
-                        return '';
-                    }
+                <!-- Unique Achievement Categories -->
+                ${(() => {
+                    // Group unique achievements by category
+                    const uniqueCategories = {
+                        '🕒 Time-of-Day': byType.unique.filter(a => ['🌙 Night Owl', '🐦 Early Bird'].includes(a.name)),
+                        '💾 Version Control & Debug': byType.unique.filter(a => ['💾 Commit Champion', '🐛 Bug Squasher'].includes(a.name)),
+                        '📁 File Management': byType.unique.filter(a => ['🏆 First Save!', '🧭 Explorer'].includes(a.name))
+                    };
                     
-                    return `
-                    <h3 class="tier-heading">${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier</h3>
-                    <div class="achievements-grid">
-                        ${byTier[tier].map((ach: Achievement) => `
-                            <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'}">
-                                <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
-                                <div class="achievement-name">${ach.name.replace(/^[^a-zA-Z]*/, '')}</div>
-                                <div class="tooltip">
-                                    <strong>${ach.name}</strong><br>
-                                    ${ach.description}<br>
-                                    <em>Tier: ${ach.tier}</em><br>
-                                    <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                    return Object.entries(uniqueCategories).map(([categoryName, categoryAchievements]) => {
+                        if (categoryAchievements.length === 0) return '';
+                        
+                        return `
+                        <h3 class="tier-heading">${categoryName}</h3>
+                        <div class="achievements-grid">
+                            ${categoryAchievements.map((ach: Achievement) => `
+                                <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'}">
+                                    <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                                    <div class="achievement-name">${ach.name.replace(/^[^a-zA-Z]*/, '')}</div>
+                                    <div class="tooltip">
+                                        <strong>${ach.name}</strong><br>
+                                        ${ach.description}<br>
+                                        <em>Tier: ${ach.tier}</em><br>
+                                        <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                                    </div>
                                 </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    `;
-                }).join('')}
+                            `).join('')}
+                        </div>
+                        `;
+                    }).join('');
+                })()}
                 
                 <div class="button-container">
                     <button class="refresh-btn" onclick="refreshAchievements()">🔄 Refresh</button>
@@ -307,9 +312,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                     }
                     
                     function resetAchievements() {
-                        if (confirm('⚠️ This will reset ALL achievement progress. Are you sure?')) {
                             vscode.postMessage({ command: 'reset' });
-                        }
                     }
                     
                     // Listen for messages from the extension
@@ -317,18 +320,28 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         const message = event.data;
                         switch (message.command) {
                             case 'resetComplete':
+                                // Remove any existing loading messages
+                                document.querySelectorAll('[style*="position:fixed"]').forEach(el => el.remove());
+                                
                                 if (message.success) {
                                     // Show success feedback
                                     const successMsg = document.createElement('div');
-                                    successMsg.textContent = '✅ All achievements have been reset!';
-                                    successMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--vscode-notifications-background);color:var(--vscode-notifications-foreground);padding:20px;border-radius:8px;z-index:1000;';
+                                    successMsg.innerHTML = '✅ All achievements have been reset!<br><small>Refreshing view...</small>';
+                                    successMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--vscode-notifications-background);color:var(--vscode-notifications-foreground);padding:20px;border-radius:8px;z-index:1000;text-align:center;';
                                     document.body.appendChild(successMsg);
-                                    setTimeout(() => successMsg.remove(), 3000);
+                                    setTimeout(() => successMsg.remove(), 2000);
                                     
                                     // Refresh the view
                                     setTimeout(() => {
                                         vscode.postMessage({ command: 'refresh' });
-                                    }, 1000);
+                                    }, 500);
+                                } else {
+                                    // Show error feedback
+                                    const errorMsg = document.createElement('div');
+                                    errorMsg.innerHTML = '❌ Failed to reset achievements.<br><small>Check the console for details.</small>';
+                                    errorMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--vscode-errorForeground);color:white;padding:20px;border-radius:8px;z-index:1000;text-align:center;';
+                                    document.body.appendChild(errorMsg);
+                                    setTimeout(() => errorMsg.remove(), 3000);
                                 }
                                 break;
                         }
