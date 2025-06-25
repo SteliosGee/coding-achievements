@@ -32,11 +32,15 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
 
     // Group unique achievements by tier
     const byTier: AchievementsByTier = {
-        diamond: byType.unique.filter((a: Achievement) => a.tier === 'diamond'),
-        gold: byType.unique.filter((a: Achievement) => a.tier === 'gold'),
-        silver: byType.unique.filter((a: Achievement) => a.tier === 'silver'),
-        bronze: byType.unique.filter((a: Achievement) => a.tier === 'bronze')
+        diamond: [...Object.values(byType.upgradable).flat().filter((a: Achievement) => a.tier === 'diamond'), ...byType.unique.filter((a: Achievement) => a.tier === 'diamond')],
+        gold: [...Object.values(byType.upgradable).flat().filter((a: Achievement) => a.tier === 'gold'), ...byType.unique.filter((a: Achievement) => a.tier === 'gold')],
+        silver: [...Object.values(byType.upgradable).flat().filter((a: Achievement) => a.tier === 'silver'), ...byType.unique.filter((a: Achievement) => a.tier === 'silver')],
+        bronze: [...Object.values(byType.upgradable).flat().filter((a: Achievement) => a.tier === 'bronze'), ...byType.unique.filter((a: Achievement) => a.tier === 'bronze')]
     };
+
+    // Group by alphabetical order
+    const allAchievements = [...Object.values(byType.upgradable).flat(), ...byType.unique];
+    const byName = allAchievements.sort((a, b) => a.name.localeCompare(b.name));
 
     return `
         <html>
@@ -239,6 +243,36 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                     .github-link svg {
                         flex-shrink: 0;
                     }
+                    .filter-container {
+                        margin: 15px 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        justify-content: center;
+                    }
+                    .filter-label {
+                        font-weight: bold;
+                        font-size: 14px;
+                    }
+                    .filter-select {
+                        background-color: var(--vscode-dropdown-background);
+                        color: var(--vscode-dropdown-foreground);
+                        border: 1px solid var(--vscode-dropdown-border);
+                        border-radius: 4px;
+                        padding: 6px 8px;
+                        font-size: 12px;
+                        cursor: pointer;
+                    }
+                    .filter-select:focus {
+                        outline: 1px solid var(--vscode-focusBorder);
+                    }
+                    .view-section {
+                        display: none;
+                        width: 100%;
+                    }
+                    .view-section.active {
+                        display: block;
+                    }
                 </style>
             </head>
             <body>
@@ -250,62 +284,185 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 
                 <h3>Progress: ${(achievements as Achievement[]).filter((a: Achievement) => a.unlocked).length} / ${(achievements as Achievement[]).length}</h3>
                 
-                <!-- Upgradable Achievement Categories -->
-                ${Object.entries(byType.upgradable).map(([baseId, achievementArray]) => {
-                    const seriesNames: { [key: string]: string } = {
-                        'coding_time': '⏰ Coding Time Mastery',
-                        'typing': '⌨️ Typing Expertise', 
-                        'daily_streak': '🏅 Daily Consistency',
-                        'languages': '🌍 Language Diversity',
-                        'workaholic': '💪 Workaholic Dedication'
-                    };
-                    const seriesName = seriesNames[baseId] || baseId;
-                    const ach = achievementArray[0]; // Single achievement per series now
-                    
-                    const progressPercentage = getProgressPercentage(ach);
-                    const progressText = getProgressText(ach);
-                    const currentTierName = getCurrentTierName(ach);
-                    const currentTierDescription = getCurrentTierDescription(ach);
-                    
-                    return `
-                    <h3 class="tier-heading">${seriesName}</h3>
-                    <div class="achievements-grid">
-                        <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'} upgradable">
-                            <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
-                            <div class="achievement-name">${currentTierName}</div>
-                            <div class="progress-mini">
-                                <div class="progress-mini-bar ${ach.tier}" style="width: ${progressPercentage}%"></div>
-                            </div>
-                            <div class="progress-text">${progressText}</div>
-                            <div class="tooltip">
-                                <strong>${seriesName}</strong><br>
-                                <strong>Current Tier: ${currentTierName}</strong><br>
-                                ${currentTierDescription}<br>
-                                <em>Progress: ${progressText}</em><br>
-                                <em>Tier Level: ${ach.tier}</em><br>
-                                <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
-                            </div>
-                        </div>
-                    </div>
-                    `;
-                }).join('')}
-                
-                <!-- Unique Achievement Categories -->
-                ${(() => {
-                    // Group unique achievements by category
-                    const uniqueCategories = {
-                        '🕒 Time-of-Day': byType.unique.filter(a => ['🌙 Night Owl', '🐦 Early Bird'].includes(a.name)),
-                        '💾 Version Control & Debug': byType.unique.filter(a => ['💾 Commit Champion', '🐛 Bug Squasher'].includes(a.name)),
-                        '📁 File Management': byType.unique.filter(a => ['🏆 First Save!', '🧭 Explorer'].includes(a.name))
-                    };
-                    
-                    return Object.entries(uniqueCategories).map(([categoryName, categoryAchievements]) => {
-                        if (categoryAchievements.length === 0) return '';
+                <!-- Filter Controls -->
+                <div class="filter-container">
+                    <label class="filter-label">View by:</label>
+                    <select class="filter-select" id="viewFilter" onchange="changeView()">
+                        <option value="category">Category</option>
+                        <option value="tier">Tier</option>
+                        <option value="name">Alphabetical</option>
+                    </select>
+                </div>
+
+                <!-- Category View (Default) -->
+                <div id="categoryView" class="view-section active">
+                    <!-- Upgradable Achievement Categories -->
+                    ${Object.entries(byType.upgradable).map(([baseId, achievementArray]) => {
+                        const seriesNames: { [key: string]: string } = {
+                            'coding_time': '⏰ Coding Time Mastery',
+                            'typing': '⌨️ Typing Expertise', 
+                            'daily_streak': '🏅 Daily Consistency',
+                            'languages': '🌍 Language Diversity',
+                            'workaholic': '💪 Workaholic Dedication'
+                        };
+                        const seriesName = seriesNames[baseId] || baseId;
+                        const ach = achievementArray[0]; // Single achievement per series now
+                        
+                        const progressPercentage = getProgressPercentage(ach);
+                        const progressText = getProgressText(ach);
+                        const currentTierName = getCurrentTierName(ach);
+                        const currentTierDescription = getCurrentTierDescription(ach);
                         
                         return `
-                        <h3 class="tier-heading">${categoryName}</h3>
+                        <h3 class="tier-heading">${seriesName}</h3>
                         <div class="achievements-grid">
-                            ${categoryAchievements.map((ach: Achievement) => `
+                            <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'} upgradable">
+                                <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                                <div class="achievement-name">${currentTierName}</div>
+                                <div class="progress-mini">
+                                    <div class="progress-mini-bar ${ach.tier}" style="width: ${progressPercentage}%"></div>
+                                </div>
+                                <div class="progress-text">${progressText}</div>
+                                <div class="tooltip">
+                                    <strong>${seriesName}</strong><br>
+                                    <strong>Current Tier: ${currentTierName}</strong><br>
+                                    ${currentTierDescription}<br>
+                                    <em>Progress: ${progressText}</em><br>
+                                    <em>Tier Level: ${ach.tier}</em><br>
+                                    <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                    
+                    <!-- Unique Achievement Categories -->
+                    ${(() => {
+                        const uniqueCategories = {
+                            '🕒 Time-of-Day': byType.unique.filter(a => ['🌙 Night Owl', '🐦 Early Bird'].includes(a.name)),
+                            '💾 Version Control & Debug': byType.unique.filter(a => ['💾 Commit Champion', '🐛 Bug Squasher'].includes(a.name)),
+                            '📁 File Management': byType.unique.filter(a => ['🏆 First Save!', '🧭 Explorer'].includes(a.name))
+                        };
+                        
+                        return Object.entries(uniqueCategories).map(([categoryName, categoryAchievements]) => {
+                            if (categoryAchievements.length === 0) {
+                                return '';
+                            }
+                            
+                            return `
+                            <h3 class="tier-heading">${categoryName}</h3>
+                            <div class="achievements-grid">
+                                ${categoryAchievements.map((ach: Achievement) => `
+                                    <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'}">
+                                        <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                                        <div class="achievement-name">${ach.name.replace(/^[^a-zA-Z]*/, '')}</div>
+                                        <div class="tooltip">
+                                            <strong>${ach.name}</strong><br>
+                                            ${ach.description}<br>
+                                            <em>Tier: ${ach.tier}</em><br>
+                                            <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            `;
+                        }).join('');
+                    })()}
+                </div>
+
+                <!-- Tier View -->
+                <div id="tierView" class="view-section">
+                    ${Object.entries(byTier).map(([tierName, tierAchievements]) => {
+                        if (tierAchievements.length === 0) {
+                            return '';
+                        }
+                        
+                        const tierEmojis = {
+                            diamond: '💎',
+                            gold: '🥇',
+                            silver: '🥈',
+                            bronze: '🥉'
+                        };
+                        
+                        return `
+                        <h3 class="tier-heading">${tierEmojis[tierName as keyof typeof tierEmojis]} ${tierName.charAt(0).toUpperCase() + tierName.slice(1)} Tier</h3>
+                        <div class="achievements-grid">
+                            ${tierAchievements.map((ach: Achievement) => {
+                                if (ach.type === 'upgradable') {
+                                    const progressPercentage = getProgressPercentage(ach);
+                                    const progressText = getProgressText(ach);
+                                    const currentTierName = getCurrentTierName(ach);
+                                    const currentTierDescription = getCurrentTierDescription(ach);
+                                    
+                                    return `
+                                    <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'} upgradable">
+                                        <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                                        <div class="achievement-name">${currentTierName}</div>
+                                        <div class="progress-mini">
+                                            <div class="progress-mini-bar ${ach.tier}" style="width: ${progressPercentage}%"></div>
+                                        </div>
+                                        <div class="progress-text">${progressText}</div>
+                                        <div class="tooltip">
+                                            <strong>${ach.name}</strong><br>
+                                            <strong>Current Tier: ${currentTierName}</strong><br>
+                                            ${currentTierDescription}<br>
+                                            <em>Progress: ${progressText}</em><br>
+                                            <em>Tier Level: ${ach.tier}</em><br>
+                                            <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                                        </div>
+                                    </div>
+                                    `;
+                                } else {
+                                    return `
+                                    <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'}">
+                                        <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                                        <div class="achievement-name">${ach.name.replace(/^[^a-zA-Z]*/, '')}</div>
+                                        <div class="tooltip">
+                                            <strong>${ach.name}</strong><br>
+                                            ${ach.description}<br>
+                                            <em>Tier: ${ach.tier}</em><br>
+                                            <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                                        </div>
+                                    </div>
+                                    `;
+                                }
+                            }).join('')}
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <!-- Alphabetical View -->
+                <div id="nameView" class="view-section">
+                    <h3 class="tier-heading">📝 All Achievements (A-Z)</h3>
+                    <div class="achievements-grid">
+                        ${byName.map((ach: Achievement) => {
+                            if (ach.type === 'upgradable') {
+                                const progressPercentage = getProgressPercentage(ach);
+                                const progressText = getProgressText(ach);
+                                const currentTierName = getCurrentTierName(ach);
+                                const currentTierDescription = getCurrentTierDescription(ach);
+                                
+                                return `
+                                <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'} upgradable">
+                                    <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
+                                    <div class="achievement-name">${currentTierName}</div>
+                                    <div class="progress-mini">
+                                        <div class="progress-mini-bar ${ach.tier}" style="width: ${progressPercentage}%"></div>
+                                    </div>
+                                    <div class="progress-text">${progressText}</div>
+                                    <div class="tooltip">
+                                        <strong>${ach.name}</strong><br>
+                                        <strong>Current Tier: ${currentTierName}</strong><br>
+                                        ${currentTierDescription}<br>
+                                        <em>Progress: ${progressText}</em><br>
+                                        <em>Tier Level: ${ach.tier}</em><br>
+                                        <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
+                                    </div>
+                                </div>
+                                `;
+                            } else {
+                                return `
                                 <div class="achievement ${ach.tier} ${ach.unlocked ? '' : 'locked'}">
                                     <img src="${view?.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, ach.icon))}" alt="${ach.name}" />
                                     <div class="achievement-name">${ach.name.replace(/^[^a-zA-Z]*/, '')}</div>
@@ -316,11 +473,11 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                                         <strong>${ach.unlocked ? 'UNLOCKED' : 'LOCKED'}</strong>
                                     </div>
                                 </div>
-                            `).join('')}
-                        </div>
-                        `;
-                    }).join('');
-                })()}
+                                `;
+                            }
+                        }).join('')}
+                    </div>
+                </div>
                 
                 <div class="button-container">
                     <button class="refresh-btn" onclick="refreshAchievements()">🔄 Refresh</button>
@@ -339,12 +496,31 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 <script>
                     const vscode = acquireVsCodeApi();
                     
+                    function changeView() {
+                        const filter = document.getElementById('viewFilter').value;
+                        const views = ['categoryView', 'tierView', 'nameView'];
+                        
+                        // Hide all views
+                        views.forEach(viewId => {
+                            const view = document.getElementById(viewId);
+                            if (view) {
+                                view.classList.remove('active');
+                            }
+                        });
+                        
+                        // Show selected view
+                        const selectedView = document.getElementById(filter + 'View');
+                        if (selectedView) {
+                            selectedView.classList.add('active');
+                        }
+                    }
+                    
                     function refreshAchievements() {
                         vscode.postMessage({ command: 'refresh' });
                     }
                     
                     function resetAchievements() {
-                            vscode.postMessage({ command: 'reset' });
+                        vscode.postMessage({ command: 'reset' });
                     }
                     
                     // Listen for messages from the extension

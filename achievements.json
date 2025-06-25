@@ -52,7 +52,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 9,
+    "currentValue": 27,
     "currentTier": -1,
     "tiers": [
       {
