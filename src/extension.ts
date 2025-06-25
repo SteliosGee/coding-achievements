@@ -113,6 +113,12 @@ export function activate(context: vscode.ExtensionContext) {
                     console.log('✅ File explorer module reset');
                 }
                 
+                const workaholicModule = require('./achievements/workaholic');
+                if (workaholicModule && typeof workaholicModule.resetWorkaholicTracking === 'function') {
+                    workaholicModule.resetWorkaholicTracking();
+                    console.log('✅ Workaholic module reset');
+                }
+                
                 console.log('✅ All achievement tracker modules reset successfully');
             } catch (moduleError) {
                 console.error('❌ Error resetting achievement tracker modules:', moduleError);
@@ -236,6 +242,7 @@ export function activate(context: vscode.ExtensionContext) {
     require('./achievements/git-debug');
     require('./achievements/daily-streaks');
     require('./achievements/file-explorer');
+    require('./achievements/workaholic');
     
     // Initialize upgradable achievements with current progress
     initializeUpgradableAchievements();

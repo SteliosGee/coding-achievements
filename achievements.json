@@ -52,7 +52,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 0,
+    "currentValue": 9,
     "currentTier": -1,
     "tiers": [
       {
@@ -194,5 +194,42 @@
     "tier": "bronze",
     "unlocked": false,
     "type": "unique"
+  },
+  {
+    "name": "💪 Workaholic Dedication",
+    "icon": "media/achievement-icon.png",
+    "description": "Code for consecutive hours in a single day with anti-AFK protection",
+    "tier": "bronze",
+    "unlocked": false,
+    "type": "upgradable",
+    "baseId": "workaholic",
+    "currentValue": 0,
+    "currentTier": -1,
+    "tiers": [
+      {
+        "name": "Dedication Bronze",
+        "target": 3,
+        "tier": "bronze",
+        "description": "Code for 3 hours straight in a single day"
+      },
+      {
+        "name": "Dedication Silver",
+        "target": 6,
+        "tier": "silver",
+        "description": "Code for 6 hours straight in a single day"
+      },
+      {
+        "name": "Dedication Gold",
+        "target": 10,
+        "tier": "gold",
+        "description": "Code for 10 hours straight in a single day"
+      },
+      {
+        "name": "Dedication Diamond",
+        "target": 16,
+        "tier": "diamond",
+        "description": "Code for 16 hours straight in a single day"
+      }
+    ]
   }
 ]

@@ -256,7 +256,8 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         'coding_time': '⏰ Coding Time Mastery',
                         'typing': '⌨️ Typing Expertise', 
                         'daily_streak': '🏅 Daily Consistency',
-                        'languages': '🌍 Language Diversity'
+                        'languages': '🌍 Language Diversity',
+                        'workaholic': '💪 Workaholic Dedication'
                     };
                     const seriesName = seriesNames[baseId] || baseId;
                     const ach = achievementArray[0]; // Single achievement per series now

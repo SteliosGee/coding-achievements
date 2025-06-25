@@ -42,5 +42,22 @@ export function initializeUpgradableAchievements() {
         }
     }
 
+    // Initialize workaholic achievements
+    const workaholicDataPath = path.join(__dirname, '../achievements/workaholic-data.json');
+    if (fs.existsSync(workaholicDataPath)) {
+        try {
+            const data = JSON.parse(fs.readFileSync(workaholicDataPath, 'utf-8'));
+            const today = new Date().toISOString().split('T')[0];
+            const todaySession = data.dailySessions?.[today];
+            
+            if (todaySession) {
+                const longestStreakHours = todaySession.longestStreakMs / (1000 * 60 * 60);
+                updateUpgradableAchievement(achievements, 'workaholic', longestStreakHours, achievementsFilePath, sidebarProvider);
+            }
+        } catch (error) {
+            console.error('Error loading workaholic data:', error);
+        }
+    }
+
     console.log('✅ Upgradable achievements initialized with current progress values');
 }

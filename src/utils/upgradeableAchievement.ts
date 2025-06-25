@@ -65,7 +65,7 @@ export function updateUpgradableAchievement(
 }
 
 export function getProgressPercentage(achievement: Achievement): number {
-    if (!achievement.currentValue || !achievement.tiers || achievement.currentTier === undefined) {
+    if (achievement.currentValue === undefined || achievement.currentValue === null || !achievement.tiers || achievement.currentTier === undefined) {
         return 0;
     }
     
@@ -94,7 +94,7 @@ export function getProgressPercentage(achievement: Achievement): number {
 }
 
 export function getProgressText(achievement: Achievement): string {
-    if (!achievement.currentValue || !achievement.tiers || achievement.currentTier === undefined) {
+    if (achievement.currentValue === undefined || achievement.currentValue === null || !achievement.tiers || achievement.currentTier === undefined) {
         return '0 / 0';
     }
     
