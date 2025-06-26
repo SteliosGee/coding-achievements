@@ -5,7 +5,7 @@ Thank you for your interest in contributing to Coding Achievements! I welcome al
 ## 🌟 Ways to Contribute
 
 ### 🐛 Bug Reports
-Found a bug? Help us fix it!
+Found a bug? Help me fix it!
 - Check if the issue already exists in the [Issues](../../issues)
 - If not, create a new issue with:
   - Clear description of the problem
