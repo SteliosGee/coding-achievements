@@ -119,6 +119,12 @@ export function activate(context: vscode.ExtensionContext) {
                     console.log('✅ Workaholic module reset');
                 }
                 
+                const weekendWarriorModule = require('./achievements/weekend-warrior');
+                if (weekendWarriorModule && typeof weekendWarriorModule.resetWeekendTracking === 'function') {
+                    weekendWarriorModule.resetWeekendTracking();
+                    console.log('✅ Weekend Warrior module reset');
+                }
+                
                 console.log('✅ All achievement tracker modules reset successfully');
             } catch (moduleError) {
                 console.error('❌ Error resetting achievement tracker modules:', moduleError);
@@ -243,6 +249,7 @@ export function activate(context: vscode.ExtensionContext) {
     require('./achievements/daily-streaks');
     require('./achievements/file-explorer');
     require('./achievements/workaholic');
+    require('./achievements/weekend-warrior');
     
     // Initialize upgradable achievements with current progress
     initializeUpgradableAchievements();
