@@ -125,6 +125,12 @@ export function activate(context: vscode.ExtensionContext) {
                     console.log('✅ Weekend Warrior module reset');
                 }
                 
+                const flowStateModule = require('./achievements/flow-state');
+                if (flowStateModule && typeof flowStateModule.resetFlowStateTracking === 'function') {
+                    flowStateModule.resetFlowStateTracking();
+                    console.log('✅ Flow State module reset');
+                }
+                
                 console.log('✅ All achievement tracker modules reset successfully');
             } catch (moduleError) {
                 console.error('❌ Error resetting achievement tracker modules:', moduleError);
@@ -250,6 +256,7 @@ export function activate(context: vscode.ExtensionContext) {
     require('./achievements/file-explorer');
     require('./achievements/workaholic');
     require('./achievements/weekend-warrior');
+    require('./achievements/flow-state');
     
     // Initialize upgradable achievements with current progress
     initializeUpgradableAchievements();

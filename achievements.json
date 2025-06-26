@@ -204,6 +204,14 @@
     "type": "unique"
   },
   {
+    "name": "🧘 Flow State",
+    "icon": "media/achievement-icon.png",
+    "description": "Code for 2 hours straight without switching applications",
+    "tier": "gold",
+    "unlocked": false,
+    "type": "unique"
+  },
+  {
     "name": "💪 Workaholic Dedication",
     "icon": "media/achievement-icon.png",
     "description": "Code for consecutive hours in a single day with anti-AFK protection",

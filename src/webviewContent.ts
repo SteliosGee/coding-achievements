@@ -339,7 +339,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                     <!-- Unique Achievement Categories -->
                     ${(() => {
                         const uniqueCategories = {
-                            '🕒 Time-of-Day': byType.unique.filter(a => ['🌙 Night Owl', '🐦 Early Bird', '🏖️ Weekend Warrior'].includes(a.name)),
+                            '🕒 Time & Focus': byType.unique.filter(a => ['🌙 Night Owl', '🐦 Early Bird', '🏖️ Weekend Warrior', '🧘 Flow State'].includes(a.name)),
                             '💾 Version Control & Debug': byType.unique.filter(a => ['💾 Commit Champion', '🐛 Bug Squasher'].includes(a.name)),
                             '📁 File Management': byType.unique.filter(a => ['🏆 First Save!', '🧭 Explorer'].includes(a.name))
                         };
