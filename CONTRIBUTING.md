@@ -1,12 +1,12 @@
 # Contributing to Coding Achievements 🏆
 
-Thank you for your interest in contributing to Coding Achievements! We welcome all kinds of contributions, whether you're a seasoned developer or just starting out. Every contribution matters and helps make this extension better for the entire VS Code community.
+Thank you for your interest in contributing to Coding Achievements! I welcome all kinds of contributions, whether you're a seasoned developer or just starting out. Every contribution matters and helps make this extension better for the entire VS Code community.
 
 ## 🌟 Ways to Contribute
 
 ### 🐛 Bug Reports
 Found a bug? Help us fix it!
-- Check if the issue already exists in our [Issues](../../issues)
+- Check if the issue already exists in the [Issues](../../issues)
 - If not, create a new issue with:
   - Clear description of the problem
   - Steps to reproduce
@@ -21,7 +21,7 @@ Have an idea for a new achievement or feature?
 - Feel free to suggest implementation approaches
 
 ### 🏅 New Achievement Ideas
-We're always looking for creative achievement ideas!
+I'm always looking for creative achievement ideas!
 - **Coding Milestones**: Lines of code, files created, commits made
 - **Time-based**: Coding streaks, late-night sessions, weekend coding
 - **Language-specific**: Achievements for different programming languages
@@ -29,7 +29,7 @@ We're always looking for creative achievement ideas!
 - **Fun & Quirky**: Unique coding patterns, special dates, easter eggs
 
 ### 📝 Documentation
-Help improve our documentation:
+Help improve the documentation:
 - Fix typos or unclear explanations
 - Add examples or tutorials
 - Translate documentation
@@ -162,12 +162,12 @@ Use clear, descriptive commit messages:
 ## 🤝 Community
 
 ### Getting Help
-- Join discussions in our [Issues](../../issues)
+- Join discussions in the [Issues](../../issues)
 - Ask questions - no question is too small!
 - Share your ideas and get feedback
 
 ### Code of Conduct
-We're committed to providing a welcoming and inclusive environment. Please:
+I'm committed to providing a welcoming and inclusive environment. Please:
 - Be respectful and kind
 - Help others learn and grow
 - Give constructive feedback
@@ -176,7 +176,7 @@ We're committed to providing a welcoming and inclusive environment. Please:
 ## 🙏 Recognition
 
 All contributors will be:
-- Listed in our README
+- Listed in the README
 - Mentioned in release notes
 - Awarded special contributor achievements in the extension!
 
@@ -188,6 +188,7 @@ All contributors will be:
 
 ---
 
-**Ready to contribute?** We can't wait to see what amazing achievements and features you'll create! Every contribution, no matter how small, helps make coding more fun and engaging for developers everywhere. 🚀
+**Ready to contribute?** I can't wait to see what amazing achievements and features you'll create! Every contribution, no matter how small, helps make coding more fun and engaging for developers everywhere. 🚀
 
 *Happy coding and achievement hunting!* 🏆
+s

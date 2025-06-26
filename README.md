@@ -48,6 +48,12 @@ Special one-time unlocks for specific accomplishments:
 
 ## 🚀 Installation
 
+### Option 1: VS Code Marketplace
+[![Install from VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/SteliosGee.coding-achievements?style=for-the-badge&logo=visual-studio-code&logoColor=white&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=SteliosGee.coding-achievements)
+
+1. **Direct Install**: [Click here to install from VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=SteliosGee.coding-achievements)S
+
+### Option 2: Manual Installation
 1. Open VS Code
 2. Go to Extensions (Ctrl+Shift+X)
 3. Search for "Coding Achievements"
