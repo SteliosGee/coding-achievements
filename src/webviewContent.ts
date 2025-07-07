@@ -76,10 +76,12 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         align-items: center;
                         margin: 10px;
                         padding: 5px;
-                        border-radius: 5px;
-                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                        transition: transform 0.2s ease;
                         width: 80px;
                         min-height: 80px;
+                        background: none;
+                        border: none;
+                        box-shadow: none;
                     }
                     .achievement.upgradable {
                         min-height: 100px;
@@ -155,30 +157,20 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         opacity: 0.8;
                     }
                     .diamond {
-                        border: 2px solid #b9f2ff;
-                        box-shadow: 0 0 10px #b9f2ff;
-                        background: linear-gradient(135deg, #b9f2ff33, #b9f2ff11);
+                        /* No background styling - clean look */
                     }
                     .gold {
-                        border: 2px solid #ffd700;
-                        box-shadow: 0 0 5px #ffd700;
-                        background: linear-gradient(135deg, #ffd70033, #ffd70011);
+                        /* No background styling - clean look */
                     }
                     .silver {
-                        border: 2px solid #c0c0c0;
-                        box-shadow: 0 0 5px #c0c0c0;
-                        background: linear-gradient(135deg, #c0c0c033, #c0c0c011);
+                        /* No background styling - clean look */
                     }
                     .bronze {
-                        border: 2px solid #cd7f32;
-                        box-shadow: 0 0 5px #cd7f32;
-                        background: linear-gradient(135deg, #cd7f3233, #cd7f3211);
+                        /* No background styling - clean look */
                     }
                     .locked {
                         filter: grayscale(100%) brightness(40%);
-                        border: 2px solid #555;
-                        box-shadow: none;
-                        background: #33333333;
+                        /* No background styling - clean look */
                     }
                     .tier-heading {
                         margin: 20px 0 10px 0;

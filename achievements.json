@@ -1,10 +1,10 @@
 [
   {
     "name": "🏆 First Save!",
-    "icon": "media/achievement-icon.png",
+    "icon": "media/image.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": false,
+    "unlocked": true,
     "type": "unique"
   },
   {
@@ -16,7 +16,7 @@
     "type": "upgradable",
     "baseId": "coding_time",
     "currentValue": 0,
-    "currentTier": -1,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Time Apprentice",
@@ -52,7 +52,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 27,
+    "currentValue": 4,
     "currentTier": -1,
     "tiers": [
       {
@@ -213,14 +213,14 @@
   },
   {
     "name": "💪 Workaholic Dedication",
-    "icon": "media/achievement-icon.png",
+    "icon": "media/image.png",
     "description": "Code for consecutive hours in a single day with anti-AFK protection",
     "tier": "bronze",
     "unlocked": false,
     "type": "upgradable",
     "baseId": "workaholic",
     "currentValue": 0,
-    "currentTier": -1,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Dedication Bronze",
