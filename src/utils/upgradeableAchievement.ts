@@ -16,12 +16,14 @@ export function updateUpgradableAchievement(
         return;
     }
 
+    // Store the previous tier for comparison
+    const previousTier = achievement.currentTier ?? -1;
+    
     // Update current value
     achievement.currentValue = currentValue;
     
     // Determine current tier based on progress
     let newTier = -1; // Start with -1 (no tier achieved)
-    let hasUnlocked = false;
     
     for (let i = 0; i < achievement.tiers.length; i++) {
         if (currentValue >= achievement.tiers[i].target) {
@@ -31,37 +33,30 @@ export function updateUpgradableAchievement(
         }
     }
     
-    // Check if we've progressed to a higher tier
-    if (newTier > (achievement.currentTier || -1)) {
-        achievement.currentTier = newTier;
-        hasUnlocked = true;
-        
-        // Update the achievement's display properties based on current tier
+    // Only show notification if we've progressed to a HIGHER tier
+    const hasProgressedToNewTier = newTier > previousTier;
+    
+    // Update tier regardless of whether it's new
+    achievement.currentTier = newTier;
+    
+    if (newTier >= 0) {
         const currentTierInfo = achievement.tiers[newTier];
         achievement.tier = currentTierInfo.tier;
         achievement.unlocked = true;
         
-        // Show notification for tier upgrade
-        vscode.window.showInformationMessage(`🏆 ${currentTierInfo.name} unlocked! (${achievement.name})`);
-    } else {
-        // Update tier info even if not newly unlocked
-        achievement.currentTier = newTier;
-        
-        if (newTier >= 0) {
-            const currentTierInfo = achievement.tiers[newTier];
-            achievement.tier = currentTierInfo.tier;
-            achievement.unlocked = true;
-        } else {
-            // No tier achieved yet, set to bronze and locked
-            achievement.tier = achievement.tiers[0].tier;
-            achievement.unlocked = false;
+        // Only show notification for NEW tier achievements
+        if (hasProgressedToNewTier) {
+            vscode.window.showInformationMessage(`🏆 ${currentTierInfo.name} unlocked! (${achievement.name})`);
         }
+    } else {
+        // No tier achieved yet, set to bronze and locked
+        achievement.tier = achievement.tiers[0].tier;
+        achievement.unlocked = false;
     }
     
-    if (hasUnlocked || achievement.currentValue !== currentValue) {
-        fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
-        sidebarProvider.refresh();
-    }
+    // Always save the updated state
+    fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2));
+    sidebarProvider.refresh();
 }
 
 export function getProgressPercentage(achievement: Achievement): number {

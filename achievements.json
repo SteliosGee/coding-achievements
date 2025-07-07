@@ -4,7 +4,7 @@
     "icon": "media/image.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": true,
+    "unlocked": false,
     "type": "unique"
   },
   {
@@ -15,8 +15,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0,
-    "currentTier": 0,
+    "currentValue": 0.0015722222222222223,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Time Apprentice",
@@ -52,8 +52,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 4,
-    "currentTier": -1,
+    "currentValue": 0,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Typing Novice",
@@ -89,8 +89,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "daily_streak",
-    "currentValue": 1,
-    "currentTier": -1,
+    "currentValue": 0,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Streak Starter",

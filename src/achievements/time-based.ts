@@ -98,7 +98,18 @@ function resetActivityTimeout() {
 }
 
 // Stop tracking when VS Code loses focus
+let lastFocusChange = 0;
+const FOCUS_DEBOUNCE_MS = 1000; // Prevent rapid focus change events
+
 vscode.window.onDidChangeWindowState((e) => {
+    const now = Date.now();
+    
+    // Debounce rapid focus changes (like Alt+Tab spam)
+    if (now - lastFocusChange < FOCUS_DEBOUNCE_MS) {
+        return;
+    }
+    lastFocusChange = now;
+    
     if (!e.focused) {
         stopTracking();
     } else {
