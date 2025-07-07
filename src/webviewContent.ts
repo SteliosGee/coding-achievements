@@ -156,6 +156,10 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         margin-top: 2px;
                         opacity: 0.8;
                     }
+                    .hide-progress .progress-mini,
+                    .hide-progress .progress-text {
+                        display: none;
+                    }
                     .diamond {
                         /* No background styling - clean look */
                     }
@@ -190,24 +194,25 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                         display: flex;
                         gap: 10px;
                         margin-top: 15px;
+                        flex-wrap: wrap;
+                        justify-content: center;
                     }
-                    .refresh-btn {
+                    .refresh-btn, .reset-btn, .toggle-progress-btn {
                         background-color: var(--vscode-button-background);
                         color: var(--vscode-button-foreground);
                         border: none;
                         padding: 8px 12px;
                         border-radius: 4px;
                         cursor: pointer;
+                        font-size: 12px;
                     }
-                    .refresh-btn:hover {
+                    .refresh-btn:hover, .toggle-progress-btn:hover {
                         background-color: var(--vscode-button-hoverBackground);
                     }
                     .reset-btn {
                         background-color: var(--vscode-errorForeground);
                         color: white;
-                        border: none;
-                        padding: 8px 12px;
-                        border-radius: 4px;
+                    }
                         cursor: pointer;
                     }
                     .reset-btn:hover {
@@ -473,6 +478,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 
                 <div class="button-container">
                     <button class="refresh-btn" onclick="refreshAchievements()">🔄 Refresh</button>
+                    <button class="toggle-progress-btn" onclick="toggleProgress()" id="progressToggle">📊 Hide Progress</button>
                     <button class="reset-btn" onclick="resetAchievements()">🗑️ Reset Progress</button>
                 </div>
                 
@@ -514,6 +520,32 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                     function resetAchievements() {
                         vscode.postMessage({ command: 'reset' });
                     }
+                    
+                    function toggleProgress() {
+                        const body = document.body;
+                        const button = document.getElementById('progressToggle');
+                        
+                        if (body.classList.contains('hide-progress')) {
+                            body.classList.remove('hide-progress');
+                            button.textContent = '📊 Hide Progress';
+                        } else {
+                            body.classList.add('hide-progress');
+                            button.textContent = '📊 Show Progress';
+                        }
+                        
+                        // Save preference to local storage
+                        localStorage.setItem('hideProgress', body.classList.contains('hide-progress'));
+                    }
+                    
+                    // Load progress preference on page load
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const hideProgress = localStorage.getItem('hideProgress') === 'true';
+                        if (hideProgress) {
+                            document.body.classList.add('hide-progress');
+                            const button = document.getElementById('progressToggle');
+                            if (button) button.textContent = '📊 Show Progress';
+                        }
+                    });
                     
                     // Listen for messages from the extension
                     window.addEventListener('message', event => {
