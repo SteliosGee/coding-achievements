@@ -15,7 +15,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0.01666138888888889,
+    "currentValue": 0.026452777777777776,
     "currentTier": -1,
     "tiers": [
       {
@@ -173,7 +173,7 @@
   },
   {
     "name": "💾 Commit Champion",
-    "icon": "media/git.png",
+    "icon": "media/commit.png",
     "description": "Make your first Git commit",
     "tier": "bronze",
     "unlocked": false,
@@ -181,7 +181,7 @@
   },
   {
     "name": "🐛 Bug Squasher",
-    "icon": "media/bug.png",
+    "icon": "media/debugging.png",
     "description": "Complete your first debug session",
     "tier": "bronze",
     "unlocked": false,
@@ -197,7 +197,7 @@
   },
   {
     "name": "🏖️ Weekend Warrior",
-    "icon": "media/achievement-icon.png",
+    "icon": "media/novacations.png",
     "description": "Code on both Saturday and Sunday of the same weekend",
     "tier": "silver",
     "unlocked": false,
