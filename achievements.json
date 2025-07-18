@@ -1,7 +1,7 @@
 [
   {
     "name": "🏆 First Save!",
-    "icon": "media/image.png",
+    "icon": "media/save.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
     "unlocked": false,
@@ -15,7 +15,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0.0021444444444444445,
+    "currentValue": 0.01666138888888889,
     "currentTier": -1,
     "tiers": [
       {
@@ -53,7 +53,7 @@
     "type": "upgradable",
     "baseId": "typing",
     "currentValue": 0,
-    "currentTier": 0,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Typing Novice",
@@ -89,8 +89,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "daily_streak",
-    "currentValue": 0,
-    "currentTier": 0,
+    "currentValue": 1,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Streak Starter",
@@ -157,7 +157,7 @@
   },
   {
     "name": "🌙 Night Owl",
-    "icon": "media/owl.png",
+    "icon": "media/night.png",
     "description": "Code between midnight and 5am",
     "tier": "silver",
     "unlocked": false,
@@ -165,7 +165,7 @@
   },
   {
     "name": "🐦 Early Bird",
-    "icon": "media/bird.png",
+    "icon": "media/sun.png",
     "description": "Code between 5am and 9am",
     "tier": "silver",
     "unlocked": false,
