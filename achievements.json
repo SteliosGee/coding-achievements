@@ -15,8 +15,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0.026452777777777776,
-    "currentTier": -1,
+    "currentValue": 0,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Time Apprentice",
@@ -53,7 +53,7 @@
     "type": "upgradable",
     "baseId": "typing",
     "currentValue": 0,
-    "currentTier": -1,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Typing Novice",
@@ -83,14 +83,14 @@
   },
   {
     "name": "🏅 Daily Consistency",
-    "icon": "media/calendar.png",
+    "icon": "media/achievement-icon.png",
     "description": "Build daily coding streaks",
     "tier": "bronze",
     "unlocked": false,
     "type": "upgradable",
     "baseId": "daily_streak",
-    "currentValue": 1,
-    "currentTier": -1,
+    "currentValue": 0,
+    "currentTier": 0,
     "tiers": [
       {
         "name": "Streak Starter",
@@ -120,7 +120,7 @@
   },
   {
     "name": "🌍 Language Diversity",
-    "icon": "media/polyglot.png",
+    "icon": "media/achievement-icon.png",
     "description": "Use different programming languages",
     "tier": "bronze",
     "unlocked": false,
@@ -189,7 +189,7 @@
   },
   {
     "name": "🧭 Explorer",
-    "icon": "media/compass.png",
+    "icon": "media/explore.png",
     "description": "Open 10 different files in one session",
     "tier": "bronze",
     "unlocked": false,
@@ -205,7 +205,7 @@
   },
   {
     "name": "🧘 Flow State",
-    "icon": "media/achievement-icon.png",
+    "icon": "media/focus.png",
     "description": "Code for 2 hours straight without switching applications",
     "tier": "gold",
     "unlocked": false,
