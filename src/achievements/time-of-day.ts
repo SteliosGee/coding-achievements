@@ -32,11 +32,13 @@ export function disposeTimeOfDayTracking() {
     }
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     checkTimeOfDay();
     checkInterval = setInterval(checkTimeOfDay, 60 * 1000);
 
-    vscode.workspace.onDidChangeTextDocument(() => {
-        checkTimeOfDay();
-    });
+    return [
+        vscode.workspace.onDidChangeTextDocument(() => {
+            checkTimeOfDay();
+        })
+    ];
 }

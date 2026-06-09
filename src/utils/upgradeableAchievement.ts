@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Achievement } from '../extension';
-import { saveAchievementDefs, loadAchievementProgress, saveAchievementProgress } from './storage';
+import { loadAchievementProgress, saveAchievementProgress } from './storage';
 
 export function updateUpgradableAchievement(
     achievements: Achievement[],
@@ -56,9 +56,6 @@ export function updateUpgradableAchievement(
         tier: achievement.tier
     };
     saveAchievementProgress(progress);
-
-    // Also save to file for backward compatibility
-    saveAchievementDefs(achievements);
 
     sidebarProvider?.refresh();
 }

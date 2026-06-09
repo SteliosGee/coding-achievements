@@ -30,19 +30,21 @@ export function resetLanguageTracking() {
     saveData();
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     loadData();
 
-    vscode.window.onDidChangeActiveTextEditor((editor) => {
-        if (editor) {
-            const languageId = editor.document.languageId;
-            if (languageId && languageId !== 'plaintext') {
-                if (!usedLanguages.has(languageId)) {
-                    usedLanguages.add(languageId);
-                    saveData();
+    return [
+        vscode.window.onDidChangeActiveTextEditor((editor) => {
+            if (editor) {
+                const languageId = editor.document.languageId;
+                if (languageId && languageId !== 'plaintext') {
+                    if (!usedLanguages.has(languageId)) {
+                        usedLanguages.add(languageId);
+                        saveData();
+                    }
+                    checkLanguageAchievements();
                 }
-                checkLanguageAchievements();
             }
-        }
-    });
+        })
+    ];
 }

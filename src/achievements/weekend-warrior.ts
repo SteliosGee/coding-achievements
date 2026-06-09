@@ -97,22 +97,24 @@ export function resetWeekendTracking() {
     saveData();
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     loadData();
 
-    vscode.workspace.onDidChangeTextDocument(() => {
-        updateWeekendActivity();
-    });
+    return [
+        vscode.workspace.onDidChangeTextDocument(() => {
+            updateWeekendActivity();
+        }),
 
-    vscode.workspace.onDidSaveTextDocument(() => {
-        updateWeekendActivity();
-    });
+        vscode.workspace.onDidSaveTextDocument(() => {
+            updateWeekendActivity();
+        }),
 
-    vscode.window.onDidChangeActiveTextEditor(() => {
-        updateWeekendActivity();
-    });
+        vscode.window.onDidChangeActiveTextEditor(() => {
+            updateWeekendActivity();
+        }),
 
-    vscode.window.onDidChangeTextEditorSelection(() => {
-        updateWeekendActivity();
-    });
+        vscode.window.onDidChangeTextEditorSelection(() => {
+            updateWeekendActivity();
+        })
+    ];
 }

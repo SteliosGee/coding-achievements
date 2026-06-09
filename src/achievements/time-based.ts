@@ -35,7 +35,7 @@ function startTracking() {
     }
 }
 
-function stopTracking() {
+export function stopTracking() {
     if (isActive && sessionStartTime) {
         const now = Date.now();
         totalCodingTimeMs += (now - sessionStartTime);
@@ -66,34 +66,36 @@ export function resetTimeTracking() {
     saveData();
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     loadData();
 
     let lastFocusChange = 0;
     const FOCUS_DEBOUNCE_MS = 1000;
 
-    vscode.workspace.onDidChangeTextDocument(() => {
-        startTracking();
-        resetActivityTimeout();
-    });
-
-    vscode.window.onDidChangeTextEditorSelection(() => {
-        startTracking();
-        resetActivityTimeout();
-    });
-
-    vscode.window.onDidChangeWindowState((e) => {
-        const now = Date.now();
-        if (now - lastFocusChange < FOCUS_DEBOUNCE_MS) {
-            return;
-        }
-        lastFocusChange = now;
-
-        if (!e.focused) {
-            stopTracking();
-        } else {
+    return [
+        vscode.workspace.onDidChangeTextDocument(() => {
             startTracking();
             resetActivityTimeout();
-        }
-    });
+        }),
+
+        vscode.window.onDidChangeTextEditorSelection(() => {
+            startTracking();
+            resetActivityTimeout();
+        }),
+
+        vscode.window.onDidChangeWindowState((e) => {
+            const now = Date.now();
+            if (now - lastFocusChange < FOCUS_DEBOUNCE_MS) {
+                return;
+            }
+            lastFocusChange = now;
+
+            if (!e.focused) {
+                stopTracking();
+            } else {
+                startTracking();
+                resetActivityTimeout();
+            }
+        })
+    ];
 }

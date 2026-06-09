@@ -4,7 +4,7 @@
     "icon": "media/save.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": true,
+    "unlocked": false,
     "type": "unique",
     "currentValue": 0,
     "currentTier": 0
@@ -17,7 +17,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0.01103138888888889,
+    "currentValue": 0,
     "currentTier": -1,
     "tiers": [
       {
@@ -54,7 +54,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 6,
+    "currentValue": 0,
     "currentTier": -1,
     "tiers": [
       {
@@ -91,7 +91,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "daily_streak",
-    "currentValue": 1,
+    "currentValue": 0,
     "currentTier": -1,
     "tiers": [
       {
@@ -129,7 +129,7 @@
     "type": "upgradable",
     "baseId": "languages",
     "currentValue": 0,
-    "currentTier": 0,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Language Explorer",
@@ -162,7 +162,7 @@
     "icon": "media/night.png",
     "description": "Code between midnight and 5am",
     "tier": "silver",
-    "unlocked": true,
+    "unlocked": false,
     "type": "unique",
     "currentValue": 0,
     "currentTier": 0
@@ -192,6 +192,16 @@
     "icon": "media/debugging.png",
     "description": "Complete your first debug session",
     "tier": "bronze",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🐞 Debugger Pro",
+    "icon": "media/debugging.png",
+    "description": "Complete 10 debug sessions in a single day",
+    "tier": "silver",
     "unlocked": false,
     "type": "unique",
     "currentValue": 0,
@@ -235,7 +245,7 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "workaholic",
-    "currentValue": 0.011032777777777779,
+    "currentValue": 0,
     "currentTier": -1,
     "tiers": [
       {

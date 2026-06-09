@@ -93,6 +93,15 @@ export function recordDebugFix() {
     streakData.debugFixes[today]++;
     saveData();
 
+    // Cap debugFixes to last 30 days
+    const keys = Object.keys(streakData.debugFixes).sort();
+    if (keys.length > 30) {
+        keys.slice(0, keys.length - 30).forEach(key => {
+            delete streakData.debugFixes[key];
+        });
+        saveData();
+    }
+
     if (streakData.debugFixes[today] >= 10) {
         unlockAchievement(achievements, '🐞 Debugger Pro', achievementsFilePath, sidebarProvider);
     }
@@ -103,12 +112,13 @@ export function resetStreakData() {
     saveData();
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     loadData();
-
-    vscode.workspace.onDidChangeTextDocument(() => {
-        updateDailyStreak();
-    });
-
     updateDailyStreak();
+
+    return [
+        vscode.workspace.onDidChangeTextDocument(() => {
+            updateDailyStreak();
+        })
+    ];
 }

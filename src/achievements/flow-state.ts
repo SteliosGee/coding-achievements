@@ -18,7 +18,7 @@ interface FlowSession {
 let flowStateData: FlowStateData = { sessions: [], bestSession: 0 };
 
 const FLOW_STATE_TARGET = 2 * 60 * 60 * 1000;
-const ACTIVITY_TIMEOUT = 30 * 1000;
+const ACTIVITY_TIMEOUT = 5 * 60 * 1000;
 const MIN_ACTIVITY_INTERVAL = 5 * 1000;
 
 let currentSession: FlowSession | null = null;
@@ -136,6 +136,12 @@ function resetActivityTimeout() {
     }, ACTIVITY_TIMEOUT);
 }
 
+export function saveCurrentSession() {
+    if (currentSession && currentSession.endTime === null) {
+        endFlowStateSession('deactivation');
+    }
+}
+
 export function resetFlowStateTracking() {
     flowStateData = { sessions: [], bestSession: 0 };
     currentSession = null;
@@ -151,7 +157,7 @@ export function resetFlowStateTracking() {
     saveData();
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     loadData();
 
     // Cleanup stale session from previous run
@@ -162,22 +168,24 @@ export function init() {
         }
     }
 
-    vscode.workspace.onDidChangeTextDocument(() => updateActivity());
-    vscode.window.onDidChangeTextEditorSelection(() => updateActivity());
-    vscode.window.onDidChangeActiveTextEditor(() => updateActivity());
-    vscode.workspace.onDidSaveTextDocument(() => updateActivity());
+    return [
+        vscode.workspace.onDidChangeTextDocument(() => updateActivity()),
+        vscode.window.onDidChangeTextEditorSelection(() => updateActivity()),
+        vscode.window.onDidChangeActiveTextEditor(() => updateActivity()),
+        vscode.workspace.onDidSaveTextDocument(() => updateActivity()),
 
-    vscode.window.onDidChangeWindowState((e) => {
-        isWindowFocused = e.focused;
-        if (!e.focused) {
-            endFlowStateSession('window lost focus');
-        }
-    });
+        vscode.window.onDidChangeWindowState((e) => {
+            isWindowFocused = e.focused;
+            if (!e.focused) {
+                endFlowStateSession('window lost focus');
+            }
+        }),
 
-    vscode.workspace.onDidCreateFiles(() => updateActivity());
-    vscode.workspace.onDidDeleteFiles(() => updateActivity());
-    vscode.workspace.onDidRenameFiles(() => updateActivity());
-    vscode.debug.onDidStartDebugSession(() => updateActivity());
-    vscode.debug.onDidChangeActiveDebugSession(() => updateActivity());
-    vscode.window.onDidChangeActiveTerminal(() => updateActivity());
+        vscode.workspace.onDidCreateFiles(() => updateActivity()),
+        vscode.workspace.onDidDeleteFiles(() => updateActivity()),
+        vscode.workspace.onDidRenameFiles(() => updateActivity()),
+        vscode.debug.onDidStartDebugSession(() => updateActivity()),
+        vscode.debug.onDidChangeActiveDebugSession(() => updateActivity()),
+        vscode.window.onDidChangeActiveTerminal(() => updateActivity())
+    ];
 }

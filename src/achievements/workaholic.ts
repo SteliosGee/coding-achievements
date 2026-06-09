@@ -34,6 +34,13 @@ function loadData() {
 }
 
 function saveData() {
+    // Cap dailySessions to last 30 days
+    const keys = Object.keys(workaholicData.dailySessions).sort();
+    if (keys.length > 30) {
+        keys.slice(0, keys.length - 30).forEach(key => {
+            delete workaholicData.dailySessions[key];
+        });
+    }
     saveTracking('workaholic', workaholicData);
 }
 
@@ -171,46 +178,48 @@ export function resetWorkaholicTracking() {
     saveData();
 }
 
-export function init() {
+export function init(): vscode.Disposable[] {
     loadData();
 
-    vscode.workspace.onDidChangeTextDocument((event) => {
-        let changeAmount = 0;
-        event.contentChanges.forEach(change => {
-            if (change.text.length > 0) {
-                changeAmount += change.text.length;
+    const disposables = [
+        vscode.workspace.onDidChangeTextDocument((event) => {
+            let changeAmount = 0;
+            event.contentChanges.forEach(change => {
+                if (change.text.length > 0) {
+                    changeAmount += change.text.length;
+                }
+            });
+
+            if (changeAmount > 0) {
+                onTypingActivity(changeAmount);
             }
-        });
+        }),
 
-        if (changeAmount > 0) {
-            onTypingActivity(changeAmount);
-        }
-    });
+        vscode.window.onDidChangeTextEditorSelection(() => {
+            onActivityDetected();
+        }),
 
-    vscode.window.onDidChangeTextEditorSelection(() => {
-        onActivityDetected();
-    });
+        vscode.window.onDidChangeActiveTextEditor(() => {
+            onActivityDetected();
+        }),
 
-    vscode.window.onDidChangeActiveTextEditor(() => {
-        onActivityDetected();
-    });
+        vscode.workspace.onDidSaveTextDocument(() => {
+            onActivityDetected();
+        }),
 
-    vscode.workspace.onDidSaveTextDocument(() => {
-        onActivityDetected();
-    });
+        vscode.window.onDidChangeWindowState((e) => {
+            if (!e.focused) {
+                endCodingStreak();
+            }
+        }),
 
-    vscode.window.onDidChangeWindowState((e) => {
-        if (!e.focused) {
-            endCodingStreak();
-        }
-    });
-
-    vscode.workspace.onDidCreateFiles(() => onActivityDetected());
-    vscode.workspace.onDidDeleteFiles(() => onActivityDetected());
-    vscode.workspace.onDidRenameFiles(() => onActivityDetected());
-    vscode.debug.onDidStartDebugSession(() => onActivityDetected());
-    vscode.debug.onDidChangeActiveDebugSession(() => onActivityDetected());
-    vscode.window.onDidChangeActiveTerminal(() => onActivityDetected());
+        vscode.workspace.onDidCreateFiles(() => onActivityDetected()),
+        vscode.workspace.onDidDeleteFiles(() => onActivityDetected()),
+        vscode.workspace.onDidRenameFiles(() => onActivityDetected()),
+        vscode.debug.onDidStartDebugSession(() => onActivityDetected()),
+        vscode.debug.onDidChangeActiveDebugSession(() => onActivityDetected()),
+        vscode.window.onDidChangeActiveTerminal(() => onActivityDetected())
+    ];
 
     // Resume streak from today if applicable
     const session = getTodaySession();
@@ -229,4 +238,6 @@ export function init() {
             saveData();
         }
     }
+
+    return disposables;
 }

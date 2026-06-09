@@ -20,19 +20,24 @@ function saveData() {
 
 export function resetFileExplorerTracking() {
     openedFiles.clear();
-    saveData();
 }
 
-export function init() {
+export function clearSession() {
+    openedFiles.clear();
+}
+
+export function init(): vscode.Disposable[] {
     loadData();
 
-    vscode.window.onDidChangeActiveTextEditor(editor => {
-        if (editor?.document?.uri) {
-            openedFiles.add(editor.document.uri.toString());
-            if (openedFiles.size >= 10) {
-                unlockAchievement(achievements, '🧭 Explorer', achievementsFilePath, sidebarProvider);
+    return [
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (editor?.document?.uri) {
+                openedFiles.add(editor.document.uri.toString());
+                if (openedFiles.size >= 10) {
+                    unlockAchievement(achievements, '🧭 Explorer', achievementsFilePath, sidebarProvider);
+                }
+                saveData();
             }
-            saveData();
-        }
-    });
+        })
+    ];
 }

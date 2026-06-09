@@ -3,19 +3,19 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { unlockAchievement } from './utils/unlockAchievement';
 import { getWebviewContent } from './webviewContent';
-import { setContext, loadAchievementDefs, loadAchievementProgress, saveAchievementDefs, saveAchievementProgress, migrateFromFileStorage, isFirstRun, markInitialized, resetAllTracking, getLastSeenVersion, setLastSeenVersion } from './utils/storage';
+import { setContext, loadAchievementDefs, loadAchievementProgress, saveAchievementProgress, migrateFromFileStorage, isFirstRun, markInitialized, resetAllTracking, getLastSeenVersion, setLastSeenVersion } from './utils/storage';
 
 // Static imports for all achievement modules (esbuild bundles them into one file)
 import { init as initSave } from './achievements/save';
 import { init as initTyping, resetCharacterCounts } from './achievements/typing';
-import { init as initTimeBased, resetTimeTracking } from './achievements/time-based';
+import { init as initTimeBased, resetTimeTracking, stopTracking } from './achievements/time-based';
 import { init as initLanguageSpecific, resetLanguageTracking } from './achievements/language-specific';
 import { init as initTimeOfDay, resetTimeOfDayTracking, disposeTimeOfDayTracking } from './achievements/time-of-day';
 import { init as initGitDebug, resetGitDebugTracking } from './achievements/git-debug';
 import { init as initDailyStreaks, resetStreakData } from './achievements/daily-streaks';
-import { init as initFileExplorer, resetFileExplorerTracking } from './achievements/file-explorer';
+import { init as initFileExplorer, resetFileExplorerTracking, clearSession } from './achievements/file-explorer';
 import { init as initWeekendWarrior, resetWeekendTracking } from './achievements/weekend-warrior';
-import { init as initFlowState, resetFlowStateTracking } from './achievements/flow-state';
+import { init as initFlowState, resetFlowStateTracking, saveCurrentSession } from './achievements/flow-state';
 import { init as initWorkaholic, resetWorkaholicTracking } from './achievements/workaholic';
 
 export interface Achievement {
@@ -53,7 +53,7 @@ const RESET_FNS: Array<() => void> = [
     resetWorkaholicTracking,
 ];
 
-const INIT_FNS: Array<() => void> = [
+const INIT_FNS: Array<() => vscode.Disposable[]> = [
     initSave,
     initTyping,
     initTimeBased,
@@ -99,7 +99,6 @@ function saveAchievementsToStorage(): void {
     });
 
     saveAchievementProgress(progress);
-    saveAchievementDefs(achievements);
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -256,12 +255,20 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(activateCommand, resetCommand);
 
     // 9. Initialize all achievement modules (load data + register listeners)
-    INIT_FNS.forEach(fn => fn());
+    INIT_FNS.forEach(fn => {
+        const disposables = fn();
+        if (Array.isArray(disposables)) {
+            disposables.forEach(d => context.subscriptions.push(d));
+        }
+    });
 
     updateStatusBar();
 }
 
 export function deactivate() {
+    stopTracking();
+    saveCurrentSession();
+    clearSession();
     disposeTimeOfDayTracking();
     console.log('Code Achievements extension is now deactivated.');
 }
