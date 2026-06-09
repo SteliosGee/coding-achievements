@@ -1,58 +1,44 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import { unlockAchievement } from '../utils/unlockAchievement';
+import { loadTracking, saveTracking } from '../utils/storage';
 import { updateUpgradableAchievement } from '../utils/upgradeableAchievement';
 import { achievements, achievementsFilePath, sidebarProvider } from '../extension';
 
-let totalCharacters: number = 0;
-const totalCharactersFilePath = path.join(__dirname, 'totalCharacters.json');
+let totalCharacters = 0;
 
-// Function to load total characters from file
-function loadTotalCharacters() {
-    if (fs.existsSync(totalCharactersFilePath)) {
-        try {
-            const data = fs.readFileSync(totalCharactersFilePath, 'utf-8');
-            totalCharacters = JSON.parse(data).totalCharacters || 0;
-        } catch (error) {
-            console.error('Error loading total characters:', error);
-            totalCharacters = 0;
-        }
-    }
+interface TypingData {
+    totalCharacters: number;
 }
 
-// Function to save total characters to file
-function saveTotalCharacters() {
-    try {
-        fs.writeFileSync(totalCharactersFilePath, JSON.stringify({ totalCharacters }), 'utf-8');
-    } catch (error) {
-        console.error('Error saving total characters:', error);
-    }
+function loadData() {
+    const data = loadTracking<TypingData>('typing', { totalCharacters: 0 });
+    totalCharacters = data.totalCharacters || 0;
 }
 
-// Function to reset character counts
+function saveData() {
+    saveTracking('typing', { totalCharacters });
+}
+
 export function resetCharacterCounts() {
     totalCharacters = 0;
-    saveTotalCharacters();
+    saveData();
 }
 
-// Load total characters on extension activation
-loadTotalCharacters();
+export function init() {
+    loadData();
 
-vscode.workspace.onDidChangeTextDocument((event) => {
-    let changeAmount = 0;
-    
-    event.contentChanges.forEach(change => {
-        if (change.text.length > 0) {
-            changeAmount += change.text.length; // Count only added characters
+    vscode.workspace.onDidChangeTextDocument((event) => {
+        let changeAmount = 0;
+
+        event.contentChanges.forEach(change => {
+            if (change.text.length > 0) {
+                changeAmount += change.text.length;
+            }
+        });
+
+        if (changeAmount > 0) {
+            totalCharacters += changeAmount;
+            saveData();
+            updateUpgradableAchievement(achievements, 'typing', totalCharacters, achievementsFilePath, sidebarProvider);
         }
     });
-    
-    if (changeAmount > 0) {
-        totalCharacters += changeAmount;
-        saveTotalCharacters(); // Save progress
-        
-        // Update upgradable typing achievements
-        updateUpgradableAchievement(achievements, 'typing', totalCharacters, achievementsFilePath, sidebarProvider);
-    }
-});
+}

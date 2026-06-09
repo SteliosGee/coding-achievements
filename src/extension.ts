@@ -1,9 +1,22 @@
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
+import * as fs from 'fs';
 import { unlockAchievement } from './utils/unlockAchievement';
 import { getWebviewContent } from './webviewContent';
-import { initializeUpgradableAchievements } from './utils/initializeAchievements';
+import { setContext, loadAchievementDefs, loadAchievementProgress, saveAchievementDefs, saveAchievementProgress, migrateFromFileStorage, isFirstRun, markInitialized, resetAllTracking, getLastSeenVersion, setLastSeenVersion } from './utils/storage';
+
+// Static imports for all achievement modules (esbuild bundles them into one file)
+import { init as initSave } from './achievements/save';
+import { init as initTyping, resetCharacterCounts } from './achievements/typing';
+import { init as initTimeBased, resetTimeTracking } from './achievements/time-based';
+import { init as initLanguageSpecific, resetLanguageTracking } from './achievements/language-specific';
+import { init as initTimeOfDay, resetTimeOfDayTracking, disposeTimeOfDayTracking } from './achievements/time-of-day';
+import { init as initGitDebug, resetGitDebugTracking } from './achievements/git-debug';
+import { init as initDailyStreaks, resetStreakData } from './achievements/daily-streaks';
+import { init as initFileExplorer, resetFileExplorerTracking } from './achievements/file-explorer';
+import { init as initWeekendWarrior, resetWeekendTracking } from './achievements/weekend-warrior';
+import { init as initFlowState, resetFlowStateTracking } from './achievements/flow-state';
+import { init as initWorkaholic, resetWorkaholicTracking } from './achievements/workaholic';
 
 export interface Achievement {
     name: string;
@@ -12,9 +25,9 @@ export interface Achievement {
     unlocked: boolean;
     tier: 'diamond' | 'gold' | 'silver' | 'bronze';
     type?: 'upgradable' | 'unique';
-    baseId?: string; // For upgradable achievements
-    currentValue?: number; // Current progress value
-    currentTier?: number; // Current tier index (0-3)
+    baseId?: string;
+    currentValue?: number;
+    currentTier?: number;
     tiers?: Array<{
         name: string;
         target: number;
@@ -27,180 +40,194 @@ export let achievements: Achievement[] = [];
 export let achievementsFilePath: string;
 export let sidebarProvider: any;
 
-export function activate(context: vscode.ExtensionContext) {
-    console.log('✅ Code Achievements extension is now active!');
+const RESET_FNS: Array<() => void> = [
+    resetCharacterCounts,
+    resetTimeTracking,
+    resetLanguageTracking,
+    resetTimeOfDayTracking,
+    resetGitDebugTracking,
+    resetStreakData,
+    resetFileExplorerTracking,
+    resetWeekendTracking,
+    resetFlowStateTracking,
+    resetWorkaholicTracking,
+];
 
+const INIT_FNS: Array<() => void> = [
+    initSave,
+    initTyping,
+    initTimeBased,
+    initLanguageSpecific,
+    initTimeOfDay,
+    initGitDebug,
+    initDailyStreaks,
+    initFileExplorer,
+    initWeekendWarrior,
+    initFlowState,
+    initWorkaholic,
+];
+
+function loadAchievementsFromStorage(): Achievement[] {
+    const defs = loadAchievementDefs();
+    const progress = loadAchievementProgress();
+
+    return defs.map(def => {
+        const key = def.baseId || def.name;
+        const user = progress[key];
+
+        return {
+            ...def,
+            unlocked: user?.unlocked || false,
+            currentValue: user?.currentValue || 0,
+            currentTier: user?.currentTier || 0,
+            tier: (user?.tier as Achievement['tier']) || def.tier
+        };
+    });
+}
+
+function saveAchievementsToStorage(): void {
+    const progress: Record<string, { unlocked: boolean; currentValue: number; currentTier: number; tier: string }> = {};
+
+    achievements.forEach(ach => {
+        const key = ach.baseId || ach.name;
+        progress[key] = {
+            unlocked: ach.unlocked,
+            currentValue: ach.currentValue || 0,
+            currentTier: ach.currentTier || 0,
+            tier: ach.tier
+        };
+    });
+
+    saveAchievementProgress(progress);
+    saveAchievementDefs(achievements);
+}
+
+export function activate(context: vscode.ExtensionContext) {
+    console.log('Code Achievements extension is now active!');
+
+    // 1. Initialize storage with VS Code context
+    setContext(context);
     achievementsFilePath = path.join(context.extensionPath, 'achievements.json');
 
-    if (fs.existsSync(achievementsFilePath)) {
-        console.log('📄 Achievements file found:', achievementsFilePath);
-        achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
-    } else {
-        console.error('⚠️ Achievements file not found:', achievementsFilePath);
+    // 2. Migrate data from old file-based storage (one-time)
+    migrateFromFileStorage();
+
+    // 3. Load achievements with user progress
+    achievements = loadAchievementsFromStorage();
+
+    // 4. First-run onboarding
+    const firstRun = isFirstRun();
+    if (firstRun) {
+        markInitialized();
     }
 
-    // Function to reset all achievement trackers
-    function resetAllAchievements() {
+    // 4b. Changelog notification on update
+    try {
+        const pkgPath = path.join(context.extensionPath, 'package.json');
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+        const currentVersion: string = pkg.version;
+        const lastSeen = getLastSeenVersion();
+
+        if (lastSeen && lastSeen !== currentVersion) {
+            vscode.window.showInformationMessage(
+                `Coding Achievements updated to v${currentVersion}! Progress is now stored persistently and survives updates.`
+            );
+        }
+        setLastSeenVersion(currentVersion);
+    } catch {
+        // Ignore errors reading package.json
+    }
+
+    // 5. Reset all achievement trackers
+    function resetAllAchievements(): boolean {
         try {
-            console.log('🔄 Starting achievement reset process...');              // Reset all achievements to unlocked=false and reset progress
             achievements.forEach(a => {
                 a.unlocked = false;
                 if (a.type === 'upgradable') {
                     a.currentValue = 0;
                     a.currentTier = 0;
-                    // Reset to bronze tier for display
                     if (a.tiers && a.tiers.length > 0) {
                         a.tier = a.tiers[0].tier;
                     }
                 }
             });
-            
-            // Save to file with pretty formatting
-            fs.writeFileSync(achievementsFilePath, JSON.stringify(achievements, null, 2), 'utf8');
-            console.log('💾 Achievements file reset and saved successfully to:', achievementsFilePath);
-            
-            // Make sure we reload the achievements array from the file
-            try {
-                achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
-                console.log('📄 Reloaded achievements from file, count:', achievements.length);
-            } catch (readError) {
-                console.error('❌ Failed to reload achievements from file:', readError);
-            }
-            
+
+            saveAchievementsToStorage();
+            resetAllTracking();
+
             // Reset all tracking modules
-            try {
-                console.log('🔄 Resetting tracking modules...');
-                
-                const typingModule = require('./achievements/typing');
-                if (typingModule && typeof typingModule.resetCharacterCounts === 'function') {
-                    typingModule.resetCharacterCounts();
-                    console.log('✅ Typing module reset');
-                }
-                
-                const timeModule = require('./achievements/time-based');
-                if (timeModule && typeof timeModule.resetTimeTracking === 'function') {
-                    timeModule.resetTimeTracking();
-                    console.log('✅ Time module reset');
-                }
-                
-                const languageModule = require('./achievements/language-specific');
-                if (languageModule && typeof languageModule.resetLanguageTracking === 'function') {
-                    languageModule.resetLanguageTracking();
-                    console.log('✅ Language module reset');
-                }
-                
-                const timeOfDayModule = require('./achievements/time-of-day');
-                if (timeOfDayModule && typeof timeOfDayModule.resetTimeOfDayTracking === 'function') {
-                    timeOfDayModule.resetTimeOfDayTracking();
-                    console.log('✅ Time of day module reset');
-                }
-                
-                const gitDebugModule = require('./achievements/git-debug');
-                if (gitDebugModule && typeof gitDebugModule.resetGitDebugTracking === 'function') {
-                    gitDebugModule.resetGitDebugTracking();
-                    console.log('✅ Git/Debug module reset');
-                }
-                
-                const dailyStreaksModule = require('./achievements/daily-streaks');
-                if (dailyStreaksModule && typeof dailyStreaksModule.resetStreakData === 'function') {
-                    dailyStreaksModule.resetStreakData();
-                    console.log('✅ Daily streaks module reset');
-                }
-                
-                const fileExplorerModule = require('./achievements/file-explorer');
-                if (fileExplorerModule && typeof fileExplorerModule.resetFileExplorerTracking === 'function') {
-                    fileExplorerModule.resetFileExplorerTracking();
-                    console.log('✅ File explorer module reset');
-                }
-                
-                console.log('✅ All achievement tracker modules reset successfully');
-            } catch (moduleError) {
-                console.error('❌ Error resetting achievement tracker modules:', moduleError);
-            }
-            
+            RESET_FNS.forEach(fn => fn());
+
             vscode.window.showInformationMessage('All achievements have been reset! Starting from scratch.');
-            console.log('✅ Reset process completed successfully');
             return true;
         } catch (error) {
-            console.error('❌ Error resetting achievements:', error);
+            console.error('Error resetting achievements:', error);
             vscode.window.showErrorMessage('Failed to reset achievements. Check console for details.');
             return false;
         }
     }
 
+    // 6. Sidebar webview provider
     class SidebarProvider implements vscode.WebviewViewProvider {
         public readonly viewType = 'coding-achievements-sidebar';
-        private _view?: vscode.WebviewView;
-    
+        public _view?: vscode.WebviewView;
+
         constructor(private readonly _context: vscode.ExtensionContext) {}
-    
+
         resolveWebviewView(webviewView: vscode.WebviewView) {
             this._view = webviewView;
-            webviewView.webview.options = { 
+            webviewView.webview.options = {
                 enableScripts: true,
                 localResourceRoots: [this._context.extensionUri]
             };
-            
-            // Handle messages from the webview
+
             webviewView.webview.onDidReceiveMessage(message => {
-                console.log('📨 Received message from webview:', message);
                 switch (message.command) {
                     case 'refresh':
-                        console.log('🔄 Refreshing webview');
                         this.updateWebview();
                         break;
                     case 'reset':
-                        console.log('🔄 Resetting achievements from webview');
-                        const success = resetAllAchievements();
-                        console.log(`Reset operation ${success ? 'succeeded' : 'failed'}`);
-                        if (success) {
-                            try {
-                                // Force reload the achievements first to ensure we have updated data
-                                achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
-                                console.log('📄 Reloaded achievements after reset, unlocked count:', 
-                                    achievements.filter(a => a.unlocked).length);
-                            } catch (error) {
-                                console.error('❌ Failed to reload achievements after reset:', error);
-                            }
+                        if (resetAllAchievements()) {
+                            achievements = loadAchievementsFromStorage();
                             this.updateWebview();
                             updateStatusBar();
-                            // Send confirmation back to webview
                             webviewView.webview.postMessage({ command: 'resetComplete', success: true });
                         } else {
-                            // Send error message back to webview
                             webviewView.webview.postMessage({ command: 'resetComplete', success: false });
                         }
                         break;
+                    case 'dismissOnboarding':
+                        // First-run onboarding dismissed — no action needed
+                        break;
                 }
             });
-            
+
+            // Show onboarding on first run
+            if (firstRun) {
+                webviewView.webview.postMessage({ command: 'showOnboarding' });
+            }
+
             this.updateWebview();
         }
-    
+
         private updateWebview() {
             if (this._view) {
-                // Make sure we're working with the latest data
                 this._view.webview.html = getWebviewContent(this._view, this._context);
             }
         }
-    
+
         public refresh() {
-            // Make sure we're working with the latest data before refreshing
-            try {
-                achievements = JSON.parse(fs.readFileSync(achievementsFilePath, 'utf8'));
-            } catch (e) {
-                console.error('Error reloading achievements during refresh:', e);
-            }
+            achievements = loadAchievementsFromStorage();
             this.updateWebview();
         }
     }
-    
+
     sidebarProvider = new SidebarProvider(context);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider('coding-achievements-sidebar', sidebarProvider)
     );
 
-    // Register status bar item to show quick stats
+    // 7. Status bar
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.text = "$(star) Achievements";
     statusBarItem.tooltip = `${achievements.filter(a => a.unlocked).length}/${achievements.length} achievements unlocked`;
@@ -208,42 +235,33 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);
 
-    // Update status bar when achievements change
     function updateStatusBar() {
         const unlockedCount = achievements.filter(a => a.unlocked).length;
         const totalCount = achievements.length;
         statusBarItem.tooltip = `${unlockedCount}/${totalCount} achievements unlocked`;
-        console.log(`📊 Status bar updated: ${unlockedCount}/${totalCount} achievements`);
-    }    // Manual activation command
-    let activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
+    }
+
+    // 8. Commands
+    const activateCommand = vscode.commands.registerCommand('coding-achievements.activate', () => {
         unlockAchievement(achievements, '🏆 First Save!', achievementsFilePath, sidebarProvider);
         updateStatusBar();
     });
 
-    // Reset command to reset achievements
-    let resetCommand = vscode.commands.registerCommand('coding-achievements.reset', () => {
+    const resetCommand = vscode.commands.registerCommand('coding-achievements.reset', () => {
         resetAllAchievements();
-        sidebarProvider.refresh();
+        sidebarProvider?.refresh();
         updateStatusBar();
     });
 
-    context.subscriptions.push(activateCommand, resetCommand);    // Register all achievement modules
-    require('./achievements/save');
-    require('./achievements/typing');
-    require('./achievements/time-based');
-    require('./achievements/language-specific');
-    require('./achievements/time-of-day');
-    require('./achievements/git-debug');
-    require('./achievements/daily-streaks');
-    require('./achievements/file-explorer');
-    
-    // Initialize upgradable achievements with current progress
-    initializeUpgradableAchievements();
-    
-    // Update status bar on activation
+    context.subscriptions.push(activateCommand, resetCommand);
+
+    // 9. Initialize all achievement modules (load data + register listeners)
+    INIT_FNS.forEach(fn => fn());
+
     updateStatusBar();
 }
 
 export function deactivate() {
-    console.log('❌ Code Achievements extension is now deactivated.');
+    disposeTimeOfDayTracking();
+    console.log('Code Achievements extension is now deactivated.');
 }

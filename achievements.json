@@ -4,8 +4,10 @@
     "icon": "media/save.png",
     "description": "You saved a file for the first time!",
     "tier": "bronze",
-    "unlocked": false,
-    "type": "unique"
+    "unlocked": true,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "⏰ Coding Time Mastery",
@@ -15,8 +17,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "coding_time",
-    "currentValue": 0,
-    "currentTier": 0,
+    "currentValue": 0.01103138888888889,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Time Apprentice",
@@ -52,8 +54,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "typing",
-    "currentValue": 0,
-    "currentTier": 0,
+    "currentValue": 6,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Typing Novice",
@@ -89,8 +91,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "daily_streak",
-    "currentValue": 0,
-    "currentTier": 0,
+    "currentValue": 1,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Streak Starter",
@@ -160,8 +162,10 @@
     "icon": "media/night.png",
     "description": "Code between midnight and 5am",
     "tier": "silver",
-    "unlocked": false,
-    "type": "unique"
+    "unlocked": true,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "🐦 Early Bird",
@@ -169,7 +173,9 @@
     "description": "Code between 5am and 9am",
     "tier": "silver",
     "unlocked": false,
-    "type": "unique"
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "💾 Commit Champion",
@@ -177,7 +183,9 @@
     "description": "Make your first Git commit",
     "tier": "bronze",
     "unlocked": false,
-    "type": "unique"
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "🐛 Bug Squasher",
@@ -185,7 +193,9 @@
     "description": "Complete your first debug session",
     "tier": "bronze",
     "unlocked": false,
-    "type": "unique"
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "🧭 Explorer",
@@ -193,7 +203,9 @@
     "description": "Open 10 different files in one session",
     "tier": "bronze",
     "unlocked": false,
-    "type": "unique"
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "🏖️ Weekend Warrior",
@@ -201,7 +213,9 @@
     "description": "Code on both Saturday and Sunday of the same weekend",
     "tier": "silver",
     "unlocked": false,
-    "type": "unique"
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "🧘 Flow State",
@@ -209,7 +223,9 @@
     "description": "Code for 2 hours straight without switching applications",
     "tier": "gold",
     "unlocked": false,
-    "type": "unique"
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
   },
   {
     "name": "💪 Workaholic Dedication",
@@ -219,8 +235,8 @@
     "unlocked": false,
     "type": "upgradable",
     "baseId": "workaholic",
-    "currentValue": 0,
-    "currentTier": 0,
+    "currentValue": 0.011032777777777779,
+    "currentTier": -1,
     "tiers": [
       {
         "name": "Dedication Bronze",

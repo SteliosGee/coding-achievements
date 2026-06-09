@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
-import { unlockAchievement } from '../utils/unlockAchievement'; // Import the unlockAchievement function
-import { achievements, achievementsFilePath, sidebarProvider } from '../extension'; // Import necessary variables
+import { unlockAchievement } from '../utils/unlockAchievement';
+import { achievements, achievementsFilePath, sidebarProvider } from '../extension';
 
-vscode.workspace.onDidSaveTextDocument(() => {
-    unlockAchievement(achievements, '🏆 First Save!', achievementsFilePath, sidebarProvider);
-});
+export function init() {
+    vscode.workspace.onDidSaveTextDocument(() => {
+        unlockAchievement(achievements, '🏆 First Save!', achievementsFilePath, sidebarProvider);
+    });
+}

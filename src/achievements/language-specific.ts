@@ -1,27 +1,48 @@
 import * as vscode from 'vscode';
-import { unlockAchievement } from '../utils/unlockAchievement';
+import { loadTracking, saveTracking } from '../utils/storage';
 import { updateUpgradableAchievement } from '../utils/upgradeableAchievement';
 import { achievements, achievementsFilePath, sidebarProvider } from '../extension';
 
-// Track unique languages used
 const usedLanguages = new Set<string>();
 
-vscode.window.onDidChangeActiveTextEditor((editor) => {
-    if (editor) {
-        const languageId = editor.document.languageId;
-        if (languageId && languageId !== 'plaintext') {
-            usedLanguages.add(languageId);
-            checkLanguageAchievements();
-        }
+interface LanguagesData {
+    languages: string[];
+}
+
+function loadData() {
+    const data = loadTracking<LanguagesData>('languages', { languages: [] });
+    usedLanguages.clear();
+    if (Array.isArray(data.languages)) {
+        data.languages.forEach(lang => usedLanguages.add(lang));
     }
-});
+}
+
+function saveData() {
+    saveTracking('languages', { languages: Array.from(usedLanguages) });
+}
 
 function checkLanguageAchievements() {
-    // Update upgradable language achievements
     updateUpgradableAchievement(achievements, 'languages', usedLanguages.size, achievementsFilePath, sidebarProvider);
 }
 
-// Reset tracking
 export function resetLanguageTracking() {
     usedLanguages.clear();
+    saveData();
+}
+
+export function init() {
+    loadData();
+
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+        if (editor) {
+            const languageId = editor.document.languageId;
+            if (languageId && languageId !== 'plaintext') {
+                if (!usedLanguages.has(languageId)) {
+                    usedLanguages.add(languageId);
+                    saveData();
+                }
+                checkLanguageAchievements();
+            }
+        }
+    });
 }
