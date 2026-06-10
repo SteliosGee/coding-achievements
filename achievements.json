@@ -273,5 +273,159 @@
         "description": "Code for 16 hours straight in a single day"
       }
     ]
+  },
+  {
+    "name": "🧹 Code Janitor",
+    "icon": "media/achievement-icon.png",
+    "description": "Delete more lines than you add in a single session",
+    "tier": "bronze",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🎯 Perfectionist",
+    "icon": "media/save.png",
+    "description": "Save the same file 20+ times in a single session",
+    "tier": "bronze",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🏃 Speed Demon",
+    "icon": "media/achievement-icon.png",
+    "description": "Type 500+ characters in under 10 seconds",
+    "tier": "silver",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🧊 Zen Mode",
+    "icon": "media/focus.png",
+    "description": "Focus on a single file for 30+ minutes",
+    "tier": "silver",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "📝 Documentation Hero",
+    "icon": "media/achievement-icon.png",
+    "description": "Save markdown documentation files",
+    "tier": "bronze",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🧪 Test-Driven",
+    "icon": "media/achievement-icon.png",
+    "description": "Create test files",
+    "tier": "bronze",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🏃‍♂️ Marathon Runner",
+    "icon": "media/achievement-icon.png",
+    "description": "Code for 4 hours straight",
+    "tier": "gold",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🧩 Multi-File Maestro",
+    "icon": "media/explore.png",
+    "description": "Edit 20+ unique files in one session",
+    "tier": "silver",
+    "unlocked": false,
+    "type": "unique",
+    "currentValue": 0,
+    "currentTier": 0
+  },
+  {
+    "name": "🌅 Early Bird Streak",
+    "icon": "media/sun.png",
+    "description": "Code before 9am for multiple consecutive days",
+    "tier": "silver",
+    "unlocked": false,
+    "type": "upgradable",
+    "baseId": "early_bird_streak",
+    "currentValue": 0,
+    "currentTier": -1,
+    "tiers": [
+      {
+        "name": "Dawn Beginner",
+        "target": 3,
+        "tier": "bronze",
+        "description": "Code before 9am for 3 days"
+      },
+      {
+        "name": "Dawn Regular",
+        "target": 5,
+        "tier": "silver",
+        "description": "Code before 9am for 5 days"
+      },
+      {
+        "name": "Dawn Master",
+        "target": 14,
+        "tier": "gold",
+        "description": "Code before 9am for 14 days"
+      },
+      {
+        "name": "Dawn Legend",
+        "target": 30,
+        "tier": "diamond",
+        "description": "Code before 9am for 30 days"
+      }
+    ]
+  },
+  {
+    "name": "🦉 Night Owl Streak",
+    "icon": "media/night.png",
+    "description": "Code past midnight for multiple consecutive days",
+    "tier": "silver",
+    "unlocked": false,
+    "type": "upgradable",
+    "baseId": "night_owl_streak",
+    "currentValue": 0,
+    "currentTier": -1,
+    "tiers": [
+      {
+        "name": "Night Prowler",
+        "target": 3,
+        "tier": "bronze",
+        "description": "Code past midnight for 3 days"
+      },
+      {
+        "name": "Night Regular",
+        "target": 5,
+        "tier": "silver",
+        "description": "Code past midnight for 5 days"
+      },
+      {
+        "name": "Night Master",
+        "target": 14,
+        "tier": "gold",
+        "description": "Code past midnight for 14 days"
+      },
+      {
+        "name": "Night Legend",
+        "target": 30,
+        "tier": "diamond",
+        "description": "Code past midnight for 30 days"
+      }
+    ]
   }
 ]

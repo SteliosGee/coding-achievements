@@ -17,6 +17,16 @@ import { init as initFileExplorer, resetFileExplorerTracking, clearSession } fro
 import { init as initWeekendWarrior, resetWeekendTracking } from './achievements/weekend-warrior';
 import { init as initFlowState, resetFlowStateTracking, saveCurrentSession } from './achievements/flow-state';
 import { init as initWorkaholic, resetWorkaholicTracking } from './achievements/workaholic';
+import { init as initCodeJanitor, resetCodeJanitorTracking } from './achievements/code-janitor';
+import { init as initPerfectionist, resetPerfectionistTracking } from './achievements/perfectionist';
+import { init as initSpeedDemon, resetSpeedDemonTracking } from './achievements/speed-demon';
+import { init as initZenMode, resetZenModeTracking } from './achievements/zen-mode';
+import { init as initDocumentationHero, resetDocumentationHeroTracking } from './achievements/documentation-hero';
+import { init as initTestDriven, resetTestDrivenTracking } from './achievements/test-driven';
+import { init as initMarathonRunner, resetMarathonRunnerTracking } from './achievements/marathon-runner';
+import { init as initMultiFileMaestro, resetMultiFileMaestroTracking } from './achievements/multi-file-maestro';
+import { init as initEarlyBirdStreak, resetEarlyBirdStreakTracking } from './achievements/early-bird-streak';
+import { init as initNightOwlStreak, resetNightOwlStreakTracking } from './achievements/night-owl-streak';
 
 export interface Achievement {
     name: string;
@@ -51,6 +61,16 @@ const RESET_FNS: Array<() => void> = [
     resetWeekendTracking,
     resetFlowStateTracking,
     resetWorkaholicTracking,
+    resetCodeJanitorTracking,
+    resetPerfectionistTracking,
+    resetSpeedDemonTracking,
+    resetZenModeTracking,
+    resetDocumentationHeroTracking,
+    resetTestDrivenTracking,
+    resetMarathonRunnerTracking,
+    resetMultiFileMaestroTracking,
+    resetEarlyBirdStreakTracking,
+    resetNightOwlStreakTracking,
 ];
 
 const INIT_FNS: Array<() => vscode.Disposable[]> = [
@@ -65,6 +85,16 @@ const INIT_FNS: Array<() => vscode.Disposable[]> = [
     initWeekendWarrior,
     initFlowState,
     initWorkaholic,
+    initCodeJanitor,
+    initPerfectionist,
+    initSpeedDemon,
+    initZenMode,
+    initDocumentationHero,
+    initTestDriven,
+    initMarathonRunner,
+    initMultiFileMaestro,
+    initEarlyBirdStreak,
+    initNightOwlStreak,
 ];
 
 function loadAchievementsFromStorage(): Achievement[] {

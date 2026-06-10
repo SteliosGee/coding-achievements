@@ -90,11 +90,13 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
     const progressPercent = totalCount > 0 ? Math.round((unlockedCount / totalCount) * 100) : 0;
 
     const seriesNames: Record<string, string> = {
-        'coding_time': '⏰ Coding Time Mastery',
-        'typing': '⌨️ Typing Expertise',
-        'daily_streak': '🏅 Daily Consistency',
-        'languages': '🌍 Language Diversity',
-        'workaholic': '💪 Workaholic Dedication'
+        'coding_time': '⏰ Coding Time',
+        'typing': '⌨️ Typing',
+        'daily_streak': '🏅 Daily Streak',
+        'languages': '🌍 Languages',
+        'workaholic': '💪 Workaholic',
+        'early_bird_streak': '🌅 Early Bird Streak',
+        'night_owl_streak': '🦉 Night Owl Streak'
     };
 
     const tierEmojis: Record<string, string> = { diamond: '💎', gold: '🥇', silver: '🥈', bronze: '🥉' };
@@ -162,10 +164,36 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         .section-title {
             font-size: 12px; font-weight: 600;
             text-transform: uppercase; letter-spacing: 0.5px;
-            opacity: 0.7; margin: 16px 0 8px 0;
+            opacity: 0.7; margin: 12px 0 8px 0;
             padding-bottom: 4px;
             border-bottom: 1px solid var(--vscode-editorGroup-border);
         }
+
+        /* --- Collapsible Sections --- */
+        .collapse-header {
+            display: flex; align-items: center; gap: 6px;
+            cursor: pointer; user-select: none;
+            font-size: 12px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            opacity: 0.85; margin: 10px 0 4px 0;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--vscode-editorGroup-border);
+        }
+        .collapse-header:hover { opacity: 1; }
+        .collapse-header .arrow {
+            transition: transform 0.2s ease;
+            font-size: 10px;
+        }
+        .collapse-header.open .arrow { transform: rotate(90deg); }
+        .collapse-header .count {
+            margin-left: auto; font-weight: normal;
+            opacity: 0.5; font-size: 10px;
+        }
+        .collapse-body {
+            overflow: hidden; transition: max-height 0.3s ease;
+            max-height: 0;
+        }
+        .collapse-body.open { max-height: 2000px; }
 
         /* --- Achievement Grid --- */
         .grid {
@@ -380,26 +408,105 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
 
         <!-- Category View -->
         <div id="view-category" class="view-section active">
-            ${Object.entries(byType.upgradable).map(([baseId, arr]) => {
-                const seriesName = seriesNames[baseId] || baseId;
+            ${(() => {
+                const upgradable = Object.entries(byType.upgradable).map(([baseId, arr]) => ({
+                    baseId,
+                    ach: arr[0],
+                    name: seriesNames[baseId] || baseId
+                }));
+                const allUpgradable = upgradable.length;
+                const unlockedUpgradable = upgradable.filter(u => u.ach.unlocked).length;
+
                 return `
-                <div class="section-title">${seriesName}</div>
-                <div class="grid">
-                    ${renderUpgradableCard(arr[0], seriesName, view, context)}
+                <div class="collapse-header open" onclick="toggleCollapse(this)">
+                    <span class="arrow">&#9654;</span>
+                    📈 Progress
+                    <span class="count">${unlockedUpgradable}/${allUpgradable}</span>
+                </div>
+                <div class="collapse-body open">
+                    <div class="grid">
+                        ${upgradable.map(u => renderUpgradableCard(u.ach, u.name, view, context)).join('')}
+                    </div>
                 </div>`;
-            }).join('')}
+            })()}
 
             ${(() => {
-                const cats: Array<[string, Achievement[]]> = [
-                    ['🕒 Time & Focus', byType.unique.filter(a => ['🌙 Night Owl', '🐦 Early Bird', '🏖️ Weekend Warrior', '🧘 Flow State'].includes(a.name))],
-                    ['💾 Version Control', byType.unique.filter(a => ['💾 Commit Champion', '🐛 Bug Squasher'].includes(a.name))],
-                    ['📁 Files', byType.unique.filter(a => ['🏆 First Save!', '🧭 Explorer'].includes(a.name))]
-                ];
-                return cats.filter(([, a]) => a.length > 0).map(([name, items]) => `
-                <div class="section-title">${name}</div>
-                <div class="grid">
-                    ${items.map(a => renderUniqueCard(a, view, context)).join('')}
-                </div>`).join('');
+                const items = byType.unique.filter(a =>
+                    ['🏃 Speed Demon', '🎯 Perfectionist', '🧹 Code Janitor', '🧊 Zen Mode', '🏃‍♂️ Marathon Runner'].includes(a.name)
+                );
+                const unlocked = items.filter(a => a.unlocked).length;
+                if (items.length === 0) return '';
+                return `
+                <div class="collapse-header open" onclick="toggleCollapse(this)">
+                    <span class="arrow">&#9654;</span>
+                    ⌨️ Coding Habits
+                    <span class="count">${unlocked}/${items.length}</span>
+                </div>
+                <div class="collapse-body open">
+                    <div class="grid">
+                        ${items.map(a => renderUniqueCard(a, view, context)).join('')}
+                    </div>
+                </div>`;
+            })()}
+
+            ${(() => {
+                const items = byType.unique.filter(a =>
+                    ['🌙 Night Owl', '🐦 Early Bird', '🌅 Early Bird Streak', '🦉 Night Owl Streak', '🏖️ Weekend Warrior', '🧘 Flow State'].includes(a.name)
+                );
+                const unlocked = items.filter(a => a.unlocked).length;
+                if (items.length === 0) return '';
+                return `
+                <div class="collapse-header open" onclick="toggleCollapse(this)">
+                    <span class="arrow">&#9654;</span>
+                    🕒 Time & Streaks
+                    <span class="count">${unlocked}/${items.length}</span>
+                </div>
+                <div class="collapse-body open">
+                    <div class="grid">
+                        ${items.map(a => a.type === 'upgradable'
+                            ? renderUpgradableCard(a, seriesNames[a.baseId || ''] || a.name, view, context)
+                            : renderUniqueCard(a, view, context)
+                        ).join('')}
+                    </div>
+                </div>`;
+            })()}
+
+            ${(() => {
+                const items = byType.unique.filter(a =>
+                    ['🏆 First Save!', '🧭 Explorer', '📝 Documentation Hero', '🧪 Test-Driven', '🧩 Multi-File Maestro'].includes(a.name)
+                );
+                const unlocked = items.filter(a => a.unlocked).length;
+                if (items.length === 0) return '';
+                return `
+                <div class="collapse-header open" onclick="toggleCollapse(this)">
+                    <span class="arrow">&#9654;</span>
+                    📁 Files & Docs
+                    <span class="count">${unlocked}/${items.length}</span>
+                </div>
+                <div class="collapse-body open">
+                    <div class="grid">
+                        ${items.map(a => renderUniqueCard(a, view, context)).join('')}
+                    </div>
+                </div>`;
+            })()}
+
+            ${(() => {
+                const items = byType.unique.filter(a =>
+                    ['💾 Commit Champion', '🐛 Bug Squasher', '🐞 Debugger Pro'].includes(a.name)
+                );
+                const unlocked = items.filter(a => a.unlocked).length;
+                if (items.length === 0) return '';
+                return `
+                <div class="collapse-header open" onclick="toggleCollapse(this)">
+                    <span class="arrow">&#9654;</span>
+                    💾 Git & Debug
+                    <span class="count">${unlocked}/${items.length}</span>
+                </div>
+                <div class="collapse-body open">
+                    <div class="grid">
+                        ${items.map(a => renderUniqueCard(a, view, context)).join('')}
+                    </div>
+                </div>`;
             })()}
         </div>
 
@@ -455,6 +562,12 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.view === view);
                 });
+            }
+
+            function toggleCollapse(header) {
+                header.classList.toggle('open');
+                const body = header.nextElementSibling;
+                body.classList.toggle('open');
             }
 
             function refreshAchievements() { vscode.postMessage({ command: 'refresh' }); }

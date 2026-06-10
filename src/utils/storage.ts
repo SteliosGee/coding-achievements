@@ -97,7 +97,7 @@ export function setLastSeenVersion(version: string): void {
 
 export function resetAllTracking(): void {
     if (context) {
-        const trackingKeys = ['typing', 'time', 'streaks', 'languages', 'workaholic', 'weekend', 'flow-state', 'file-explorer'];
+        const trackingKeys = ['typing', 'time', 'streaks', 'languages', 'workaholic', 'weekend', 'flow-state', 'file-explorer', 'early_bird_streak', 'night_owl_streak'];
         trackingKeys.forEach(key => {
             context!.globalState.update(`tracking_${key}`, undefined);
         });
