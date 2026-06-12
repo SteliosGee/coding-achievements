@@ -146,14 +146,16 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         /* --- Filter --- */
         .filter-bar {
             display: flex; justify-content: center;
-            gap: 8px; margin-bottom: 16px;
+            gap: 4px; margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         .filter-btn {
             background: var(--vscode-button-background);
             color: var(--vscode-button-foreground);
-            border: none; padding: 4px 10px;
+            border: none; padding: 4px 8px;
             border-radius: 4px; cursor: pointer;
             font-size: 11px; transition: opacity 0.2s;
+            flex: 0 1 auto;
         }
         .filter-btn:hover { opacity: 0.85; }
         .filter-btn.active {
@@ -190,24 +192,26 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
             opacity: 0.5; font-size: 10px;
         }
         .collapse-body {
-            overflow: hidden; transition: max-height 0.3s ease;
-            max-height: 0;
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+            max-height: 0; opacity: 0;
         }
-        .collapse-body.open { max-height: 2000px; }
+        .collapse-body.open { max-height: 3000px; opacity: 1; }
 
         /* --- Achievement Grid --- */
         .grid {
-            display: flex; flex-wrap: wrap;
-            justify-content: center; gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 6px;
             margin-bottom: 8px;
+            width: 100%;
         }
 
         /* --- Achievement Card --- */
         .achievement-card {
             position: relative;
-            display: inline-flex; flex-direction: column;
+            display: flex; flex-direction: column;
             align-items: center; text-align: center;
-            width: 80px; padding: 8px 4px;
+            width: 100%; padding: 6px 4px;
             border-radius: 8px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: default;
@@ -215,7 +219,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         .achievement-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 10;
+            z-index: 9999;
         }
         .achievement-card.locked {
             filter: grayscale(80%) brightness(50%);
@@ -232,11 +236,37 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         .achievement-card.unlocked.silver { box-shadow: 0 0 8px rgba(192, 192, 192, 0.15); }
         .achievement-card.unlocked.bronze { box-shadow: 0 0 8px rgba(205, 127, 50, 0.15); }
 
-        .card-icon-wrap { position: relative; }
-        .card-icon-wrap img { width: 40px; height: 40px; object-fit: contain; }
+        .card-icon-wrap { position: relative; display: inline-flex; }
+        .card-icon-wrap img { width: 36px; height: 36px; object-fit: contain; }
+
+        /* Tier-tinted icons for locked achievements */
+        .achievement-card.locked.bronze .card-icon-wrap img {
+            filter: grayscale(100%) brightness(0.4) sepia(1) hue-rotate(-10deg) saturate(2.5);
+        }
+        .achievement-card.locked.silver .card-icon-wrap img {
+            filter: grayscale(100%) brightness(0.55) saturate(0.5);
+        }
+        .achievement-card.locked.gold .card-icon-wrap img {
+            filter: grayscale(100%) brightness(0.45) sepia(1) hue-rotate(5deg) saturate(3);
+        }
+        .achievement-card.locked.diamond .card-icon-wrap img {
+            filter: grayscale(100%) brightness(0.45) sepia(1) hue-rotate(170deg) saturate(3);
+        }
+        .achievement-card.locked:hover.bronze .card-icon-wrap img {
+            filter: grayscale(60%) brightness(0.6) sepia(1) hue-rotate(-10deg) saturate(2);
+        }
+        .achievement-card.locked:hover.silver .card-icon-wrap img {
+            filter: grayscale(60%) brightness(0.65) saturate(0.4);
+        }
+        .achievement-card.locked:hover.gold .card-icon-wrap img {
+            filter: grayscale(60%) brightness(0.6) sepia(1) hue-rotate(5deg) saturate(2.5);
+        }
+        .achievement-card.locked:hover.diamond .card-icon-wrap img {
+            filter: grayscale(60%) brightness(0.6) sepia(1) hue-rotate(170deg) saturate(2.5);
+        }
         .unlock-badge {
             position: absolute; bottom: -2px; right: -4px;
-            width: 14px; height: 14px;
+            width: 12px; height: 12px;
             background: #4ec9b0; color: #1e1e1e;
             border-radius: 50%; font-size: 9px;
             display: flex; align-items: center; justify-content: center;
@@ -244,13 +274,13 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         }
         .card-name {
             font-size: 9px; margin-top: 4px;
-            max-width: 76px; overflow: hidden;
+            width: 100%; overflow: hidden;
             text-overflow: ellipsis; white-space: nowrap;
         }
 
         /* --- Progress Bar (mini) --- */
         .progress-track {
-            width: 64px; height: 3px;
+            width: 80%; height: 3px;
             background: var(--vscode-editor-inactiveSelectionBackground);
             border-radius: 2px; margin-top: 3px; overflow: hidden;
         }
@@ -270,18 +300,18 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
 
         /* --- Tooltip --- */
         .tooltip {
-            visibility: hidden; width: 200px;
+            visibility: hidden; width: 180px;
             background: var(--vscode-editorWidget-background);
             color: var(--vscode-editorWidget-foreground);
             text-align: left; border-radius: 6px;
-            padding: 10px; position: absolute;
-            z-index: 100; bottom: 110%; left: 50%;
+            padding: 8px; position: absolute;
+            z-index: 10000; bottom: 110%; left: 50%;
             transform: translateX(-50%);
             opacity: 0; transition: opacity 0.2s;
             box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-            pointer-events: none; font-size: 11px;
+            pointer-events: none; font-size: 10px;
             border: 1px solid var(--vscode-editorWidget-border);
-            line-height: 1.5;
+            line-height: 1.4;
         }
         .achievement-card:hover .tooltip {
             visibility: visible; opacity: 1;
@@ -369,6 +399,24 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
             pointer-events: none;
         }
         .toast.visible { opacity: 1; }
+
+        /* --- Responsive --- */
+        @media (max-width: 250px) {
+            body { padding: 8px; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 4px; }
+            .card-icon-wrap img { width: 30px; height: 30px; }
+            .card-name { font-size: 8px; }
+            .filter-btn { padding: 3px 6px; font-size: 10px; }
+            .collapse-header { font-size: 11px; }
+            .progress-label { font-size: 7px; }
+        }
+        @media (min-width: 500px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+        }
+        @media (min-width: 700px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+            .card-icon-wrap img { width: 40px; height: 40px; }
+        }
     </style>
     </head>
     <body>
