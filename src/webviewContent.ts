@@ -239,31 +239,6 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         .card-icon-wrap { position: relative; display: inline-flex; }
         .card-icon-wrap img { width: 36px; height: 36px; object-fit: contain; }
 
-        /* Tier-tinted icons for locked achievements */
-        .achievement-card.locked.bronze .card-icon-wrap img {
-            filter: grayscale(100%) brightness(0.4) sepia(1) hue-rotate(-10deg) saturate(2.5);
-        }
-        .achievement-card.locked.silver .card-icon-wrap img {
-            filter: grayscale(100%) brightness(0.55) saturate(0.5);
-        }
-        .achievement-card.locked.gold .card-icon-wrap img {
-            filter: grayscale(100%) brightness(0.45) sepia(1) hue-rotate(5deg) saturate(3);
-        }
-        .achievement-card.locked.diamond .card-icon-wrap img {
-            filter: grayscale(100%) brightness(0.45) sepia(1) hue-rotate(170deg) saturate(3);
-        }
-        .achievement-card.locked:hover.bronze .card-icon-wrap img {
-            filter: grayscale(60%) brightness(0.6) sepia(1) hue-rotate(-10deg) saturate(2);
-        }
-        .achievement-card.locked:hover.silver .card-icon-wrap img {
-            filter: grayscale(60%) brightness(0.65) saturate(0.4);
-        }
-        .achievement-card.locked:hover.gold .card-icon-wrap img {
-            filter: grayscale(60%) brightness(0.6) sepia(1) hue-rotate(5deg) saturate(2.5);
-        }
-        .achievement-card.locked:hover.diamond .card-icon-wrap img {
-            filter: grayscale(60%) brightness(0.6) sepia(1) hue-rotate(170deg) saturate(2.5);
-        }
         .unlock-badge {
             position: absolute; bottom: -2px; right: -4px;
             width: 12px; height: 12px;
