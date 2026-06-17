@@ -135,7 +135,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
         }
         .progress-fill-outer {
             height: 100%; border-radius: 4px;
-            background: linear-gradient(90deg, var(--tier-bronze), var(--tier-silver), var(--tier-gold), var(--tier-diamond));
+            background: linear-gradient(90deg, #cd7f32, #ffd700);
             transition: width 0.5s ease;
         }
         .progress-stats {
