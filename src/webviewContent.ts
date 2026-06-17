@@ -307,15 +307,17 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
             padding: 8px; position: absolute;
             z-index: 10000; bottom: 110%; left: 50%;
             transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.2s;
+            opacity: 0; transition: opacity 0.15s;
             box-shadow: 0 4px 16px rgba(0,0,0,0.4);
             pointer-events: none; font-size: 10px;
             border: 1px solid var(--vscode-editorWidget-border);
             line-height: 1.4;
         }
-        .achievement-card:hover .tooltip {
+        .achievement-card:hover > .tooltip {
             visibility: visible; opacity: 1;
         }
+        .achievement-card.edge-left > .tooltip { left: 0; transform: none; }
+        .achievement-card.edge-right > .tooltip { left: auto; right: 0; transform: none; }
         .tier-badge {
             display: inline-block; padding: 1px 6px;
             border-radius: 3px; font-size: 9px;
@@ -616,7 +618,25 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 header.classList.toggle('open');
                 const body = header.nextElementSibling;
                 body.classList.toggle('open');
+                requestAnimationFrame(labelEdges);
             }
+
+            function labelEdges() {
+                document.querySelectorAll('.grid').forEach(grid => {
+                    const cards = grid.querySelectorAll('.achievement-card');
+                    if (!cards.length) return;
+                    const gridRect = grid.getBoundingClientRect();
+                    cards.forEach(c => {
+                        c.classList.remove('edge-left', 'edge-right');
+                        const r = c.getBoundingClientRect();
+                        if (r.left <= gridRect.left + 2) c.classList.add('edge-left');
+                        if (r.right >= gridRect.right - 2) c.classList.add('edge-right');
+                    });
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', labelEdges);
+            window.addEventListener('resize', labelEdges);
 
             function refreshAchievements() { vscode.postMessage({ command: 'refresh' }); }
             function resetAchievements() { vscode.postMessage({ command: 'reset' }); }
