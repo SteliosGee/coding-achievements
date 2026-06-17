@@ -612,6 +612,7 @@ export function getWebviewContent(view: vscode.WebviewView | undefined, context:
                 document.querySelectorAll('.filter-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.view === view);
                 });
+                requestAnimationFrame(labelEdges);
             }
 
             function toggleCollapse(header) {
